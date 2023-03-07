@@ -1,0 +1,49 @@
+{% extends "layout.twig" %}
+{% block head %}
+    <style>
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #messages > li {
+            padding: 0.5rem 1rem;
+        }
+
+        #messages > li:nth-child(odd) {
+            background: #efefef;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-center mb-3">
+        <a href="/" class="btn btn-primary "><i class="fas fa-list"></i> Cron Jobs</a>
+    </div>
+    <div id="messages"></div>
+{% endblock %}
+
+{% block script %}
+    <script src="http://{{ host }}:{{ socket }}/socket.io/socket.io.js"></script>
+    <script>
+        const messages = document.getElementById("messages");
+        let color = "secondary";
+        try {
+            const socket = io("http://{{ host }}:{{ socket }}");
+            socket.on("console", function (msg) {
+                const item = document.createElement("p");
+                item.classList.add("alert-" + color);
+                item.style.borderRadius = "3px";
+                item.innerHTML = "&nbsp;" + msg;
+                messages.prepend(item);
+                if (color === "secondary")
+                    color = "dark";
+                else
+                    color = "secondary";
+            });
+        } catch (err) {
+            showToast("danger", "Server is offline!");
+        }
+    </script>
+{% endblock %}
