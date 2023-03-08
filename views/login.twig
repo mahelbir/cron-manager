@@ -1,0 +1,58 @@
+{% extends "layout.twig" %}
+
+{% block body %}
+    <div class=" d-flex justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="password"></label>
+                        <input type="password" class="form-control" id="password" placeholder="Password">
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary" id="login"><i class="fas fa-sign-in"></i> Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        const btn = document.querySelector("#login");
+        btn.addEventListener("click", () => {
+            btn.disabled = true;
+            axios.post("/auth/login", {
+                    "password": document.querySelector("#password").value
+                }, {
+                    maxRedirects: 0,
+                    validateStatus: function (status) {
+                        return status === 200
+                    }
+                }
+            )
+                .then(res => {
+                    if (res.data.status === "success") {
+                        showToast("success", "Logged in successfully.");
+                        setTimeout(() => {
+                            window.location.href = "/";
+                        }, 1000);
+                    } else {
+                        btn.disabled = false;
+                        showToast("error", "Check the password!");
+                    }
+                })
+                .catch(err => {
+                    btn.disabled = false;
+                    if (err.response.data)
+                        showToast("error", "Check the password!");
+                    else
+                        showToast("error", "An error occurred!");
+                    console.log(err);
+                });
+        })
+    </script>
+{% endblock %}
+
+

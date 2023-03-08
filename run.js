@@ -4,12 +4,12 @@ const fs = require("fs");
 const axios = require("axios");
 const tough = require('tough-cookie');
 const {decodeJob} = require("./utils/helper");
-const writable = path.join(config.path.root, "writable");
+const {response} = require("express");
 require('dotenv').config();
 
 const socket = require('socket.io')(process.env.SOCKET, {
     cors: {
-        origin: '*',
+        origin: "http://" + process.env.HOST + ":" + process.env.PORT,
         methods: ['GET']
     }
 });
@@ -22,54 +22,70 @@ socket.on('connection', (socket) => {
 });
 
 
-fs.readdir(writable, async (err, files) => {
-    if(!files || files.length < 1)
+fs.readdir(config.path.writable, async (err, files) => {
+    if (!files || files.length < 1)
         return;
     const pattern = /^\d+___\d+___.*\.enabled$/;
     const matchingFiles = files.filter((file) => pattern.test(file));
     for (let file of matchingFiles) {
         const job = decodeJob(file);
-        file = path.join(writable, file);
-        fs.readFile(file, (err, url) => {
+        file = path.join(config.path.writable, file);
+        fs.readFile(file, (err, json) => {
             if (err) {
                 console.error('Error reading file:', file, err);
                 return;
             }
-            url = url.toString();
-            setInterval(() => {
-                execute(file, url, job.name);
-            }, job.interval * 1000);
+            execute(file, job, JSON.parse(json.toString()));
         });
     }
 });
 
 const cookieJar = new tough.CookieJar(true);
-const instance = axios.create({
-    withCredentials: true,
-    jar: cookieJar
-});
 
-function execute(file, url, name) {
+function execute(file, job, cron) {
     const timeBefore = Date.now();
-    instance.get(url).then(res => {
+    axios({
+        ...cron.config,
+        ...{
+            method: cron.method,
+            url: cron.url,
+            timeout: 10000,
+            withCredentials: true,
+            jar: cookieJar
+        }
+    }).then(res => {
         let date = "?";
+        const cost = new Date() - timeBefore;
         if (typeof res.headers.date !== 'undefined')
             date = res.headers.date;
         const message =
-            "Job: " + name + "  " +
-            "Status: " + res.status + "  " +
-            "Completed: " + ((new Date() - timeBefore) / 1000).toFixed(2) + ' secs' + "  " +
+            "Job: " + job.name + " | " +
+            "Status: " + res.status + " | " +
+            "Completed: " + (cost / 1000).toFixed(2) + ' secs' + " | " +
             "Date: " + date;
         socket.emit("console", message);
         console.log(message);
+        let timeout = job.interval
+        if (res.data != null && res.data === cron.response)
+            timeout = cron.intervalRes
+        setTimeout(() => {
+            execute(file, job, cron);
+        }, timeout * 1000 - cost);
     }).catch(err => {
+        const cost = new Date() - timeBefore;
         const message =
-            "Job: " + name + "  " +
-            "Status: " + err.message + "  " +
-            "Completed: " + ((new Date() - timeBefore) / 1000).toFixed(2) + ' secs' + "  " +
-            "Date: " + "?";
+            "Job: " + job.name + " | " +
+            "Status: " + err.message + " | " +
+            "Completed: " + (cost / 1000).toFixed(2) + ' secs' + " | " +
+            "Date: ?";
         socket.emit("console", message);
         console.log(message);
+        let timeout = job.interval
+        if (err.response && err.response.data != null && err.response.data === cron.response)
+            timeout = cron.intervalRes
+        setTimeout(() => {
+            execute(file, job, cron);
+        }, timeout * 1000 - cost);
     }).finally(() => {
         const time = new Date();
         fs.utimes(file, time, time, () => {

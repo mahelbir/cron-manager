@@ -8,13 +8,21 @@ const router = express.Router();
 
 router.get("/", (req, res) => {
     if (!req.query.id)
-        res.redirect("/");
+        return res.redirect("/");
     try {
-        fs.readFile(path.join(config.path.root, "writable", req.query.id), (err, url) => {
+        fs.readFile(path.join(config.path.writable, req.query.id), (err, json) => {
             if (err)
                 return res.redirect("/");
-            url = url.toString();
-            res.render("edit", {id: req.query.id, link: url, job: decodeJob(req.query.id)});
+            const cron = JSON.parse(json.toString());
+            const config = JSON.stringify(cron.config)
+            res.render("edit", {
+                id: req.query.id,
+                cron: cron,
+                job: decodeJob(req.query.id),
+                config: config,
+                advancedReq: config !== '{}' || cron.method !== "GET",
+                advancedRes: cron.response != null
+            });
         });
     } catch (err) {
         res.redirect("/");

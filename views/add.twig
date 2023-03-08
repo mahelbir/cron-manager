@@ -12,12 +12,58 @@
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
                     <div class="mb-3">
+                        <label for="interval" class="form-label">Interval (seconds)</label>
+                        <input type="number" class="form-control" id="interval" name="interval" min="0" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="link" class="form-label">Link</label>
                         <input type="url" class="form-control" id="link" name="link" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="interval" class="form-label">Time Interval</label>
-                        <input type="number" class="form-control" id="interval" name="interval" min="0" required>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="advancedReq" name="advancedReq" value="on">
+                        <label class="form-check-label" for="advancedReq">
+                            Advanced Request
+                        </label>
+                    </div>
+                    <div id="fieldReq" style="display: none">
+                        <div class="mb-3">
+                            <label for="method" class="form-label">Method</label>
+                            <select name="method" id="method" class="form-control">
+                                <option selected>GET</option>
+                                <option>POST</option>
+                                <option>PUT</option>
+                                <option>PATCH</option>
+                                <option>DELETE</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="config" class="form-label">Config for Axios</label>
+                            <textarea name="config" id="config" cols="30" rows="10" class="form-control">{
+  "data": {
+    "post_1": "val1",
+    "post_2": "val2"
+  },
+  "headers": {
+    "content-type": "application/x-www-form-urlencoded"
+  }
+}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="advancedRes">
+                        <label class="form-check-label" for="advancedRes">
+                            Advanced Response
+                        </label>
+                    </div>
+                    <div id="fieldRes" style="display: none">
+                        <div class="mb-3">
+                            <label for="response" class="form-label">If response that:</label>
+                            <textarea name="response" id="response" cols="30" rows="10" class="form-control"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="intervalRes" class="form-label">Set interval that:</label>
+                            <input type="number" class="form-control" id="intervalRes" name="intervalRes" min="0">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -28,33 +74,19 @@
     </div>
 </div>
 
-
+{% include 'form-script.twig' %}
 <script>
-    function buttonsDisabled(disabled) {
-        const buttons = document.getElementsByTagName("button");
-        for (let i = 0; i < buttons.length; i++)
-            buttons[i].disabled = disabled;
-    }
-
-    function formSubmit() {
-        buttonsDisabled(true);
-        const form = document.querySelector("form");
-        const formData = new URLSearchParams(new FormData(form)).toString();
-        axios.post(form.getAttribute("action"), formData)
-            .then(res => {
-                showToast(res.data.status, res.data.message);
-                if (res.data.status === "success")
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2500);
-                else
-                    buttonsDisabled(false);
-            })
-            .catch(error => {
-                buttonsDisabled(false);
-                showToast("error", "An error occurred!");
-                console.log(error);
-            });
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+        const advancedReq = document.querySelector("#advancedReq");
+        const fieldReq = document.querySelector("#fieldReq");
+        const advancedRes = document.querySelector("#advancedRes");
+        const fieldRes = document.querySelector("#fieldRes");
+        advancedReq.addEventListener("click", () => {
+            toggleVisibility(advancedReq.checked, fieldReq);
+        });
+        advancedRes.addEventListener("click", () => {
+            toggleVisibility(advancedRes.checked, fieldRes);
+        });
+    });
 </script>
 

@@ -5,9 +5,11 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const app = express();
 const router = require('./config/router');
+const session = require('express-session');
 
 require('dotenv').config();
 console.log("ENVIRONMENT: " + app.get('env'));
+console.log("http://" + process.env.HOST + ":" + process.env.PORT);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,6 +21,15 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({
+    name: "SESSION",
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+}));
 app.use("/", router);
 
 // catch 404 and forward to error handler

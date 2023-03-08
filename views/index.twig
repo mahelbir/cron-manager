@@ -26,10 +26,10 @@
                     <td class="time" data-time="{{ job.file }}">{{ job.run }}</td>
                     <td>
                         {% if job.enabled %}
-                            <a href="/action/status/off?id={{ job.id }}" class="btn btn-sm btn-warning" title="Stop"><i
+                            <a href="/action/status/disabled?id={{ job.id }}" class="btn btn-sm btn-warning" title="Stop"><i
                                         class="fas fa-pause"></i></a>
                         {% else %}
-                            <a href="/action/status/on?id={{ job.id }}" class="btn btn-sm btn-success" title="Start"><i
+                            <a href="/action/status/enabled?id={{ job.id }}" class="btn btn-sm btn-success" title="Start"><i
                                         class="fas fa-play"></i></a>
                         {% endif %}
                         <a href="/edit?id={{ job.id }}" class="btn btn-sm btn-info" title="Edit"><i

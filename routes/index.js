@@ -5,17 +5,13 @@ const fs = require("fs");
 const path = require("path");
 const router = express.Router();
 
-router.get("/", function (req, res, next) {
+router.get("/", function (req, res) {
     try {
-        const files = fs.readdirSync(path.join(config.path.root, "writable"));
+        const files = fs.readdirSync(config.path.writable);
         const pattern = /^\d+___\d+___.*\w+$/;
-        const matchingFiles = files.filter((file) => {
-            if (file.endsWith(".log"))
-                return false;
-            return pattern.test(file);
-        });
+        const matchingFiles = files.filter(file => pattern.test(file));
         const jobs = matchingFiles.map(file => {
-            const stats = fs.statSync(path.join(config.path.root, "writable", file));
+            const stats = fs.statSync(path.join(config.path.writable, file));
             const obj = helper.decodeJob(file);
             obj.run = stats.mtimeMs;
             obj.file = file;

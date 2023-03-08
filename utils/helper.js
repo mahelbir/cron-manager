@@ -1,4 +1,3 @@
-
 function decodeJob(text) {
     const parts = text.split("___");
     return {

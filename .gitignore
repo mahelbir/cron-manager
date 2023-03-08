@@ -64,3 +64,5 @@ package-lock.json
 writable/*
 !writable/change.cronjob
 .idea/
+*.zip
+*.py
