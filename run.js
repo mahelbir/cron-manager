@@ -35,7 +35,15 @@ fs.readdir(config.path.writable, async (err, files) => {
                 console.error('Error reading file:', file, err);
                 return;
             }
-            execute(file, job, JSON.parse(json.toString()));
+            fs.stat(file, (err, stats) => {
+                if (err) {
+                    console.error('Error stats:', file, err);
+                    return;
+                }
+                setTimeout(() => {
+                    execute(file, job, JSON.parse(json.toString()));
+                }, Math.max(0, stats.mtimeMs + job.interval * 1000 - new Date()));
+            });
         });
     }
 });
@@ -49,7 +57,7 @@ function execute(file, job, cron) {
         ...{
             method: cron.method,
             url: cron.url,
-            timeout: 10000,
+            timeout: 90000,
             withCredentials: true,
             jar: cookieJar
         }
@@ -70,7 +78,7 @@ function execute(file, job, cron) {
             timeout = cron.intervalRes
         setTimeout(() => {
             execute(file, job, cron);
-        }, timeout * 1000 - cost);
+        }, Math.max(0, timeout * 1000 - cost));
     }).catch(err => {
         const cost = new Date() - timeBefore;
         const message =
@@ -85,7 +93,7 @@ function execute(file, job, cron) {
             timeout = cron.intervalRes
         setTimeout(() => {
             execute(file, job, cron);
-        }, timeout * 1000 - cost);
+        }, Math.max(0, timeout * 1000 - cost));
     }).finally(() => {
         const time = new Date();
         fs.utimes(file, time, time, () => {
