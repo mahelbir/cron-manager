@@ -61,8 +61,8 @@ typings/
 .next
 
 package-lock.json
-writable/*
-!writable/change.cronjob
+storage/*
+!storage/change.cronjob
 .idea/
 *.zip
 *.py

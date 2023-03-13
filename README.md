@@ -4,7 +4,7 @@ NodeJS script to manage cron jobs asynchronously with a web panel
 
 ## Installation
 
-1. Rename 'example.env' to '.env'
+1. Rename '.env.example' to '.env'
 2. Edit .env file
     1. HOST: server ip or domain
     2. PORT: port for web panel

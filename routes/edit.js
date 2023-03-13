@@ -1,16 +1,16 @@
 const express = require("express");
-const config = require("../config");
+const router = express.Router();
 const fs = require("fs");
 const path = require("path");
+const config = require("../config");
 const {decodeJob} = require("../utils/helper");
-const router = express.Router();
 
 
 router.get("/", (req, res) => {
     if (!req.query.id)
         return res.redirect("/");
     try {
-        fs.readFile(path.join(config.path.writable, req.query.id), (err, json) => {
+        fs.readFile(path.join(config.path.storage, req.query.id), (err, json) => {
             if (err)
                 return res.redirect("/");
             const cron = JSON.parse(json.toString());

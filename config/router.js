@@ -1,16 +1,23 @@
-const app = require('express');
-const config = require('./');
-const router = app.Router();
+const path = require("path");
+const config = require("./");
 
+function route(route) {
+    return path.join(config.path.root, "routes/") + route;
+}
 
-router.use("/auth", require(config.path.routes + 'auth'));
-router.use("/", (req, res, next) => {
-    if (req.session.loggedIn) return next();
-    res.redirect("/auth/login");
-});
-router.use("/", require(config.path.routes + 'index'));
-router.use("/edit", require(config.path.routes + 'edit'));
-router.use("/watch", require(config.path.routes + 'watch'));
-router.use("/action", require(config.path.routes + 'action'));
+function middleware(middleware) {
+    return path.join(config.path.root, "middlewares/") + middleware;
+}
 
-module.exports = router;
+module.exports = app => {
+
+    app.use("/auth", require(route("auth")));
+
+    app.use(require(middleware("auth")));
+
+    app.use("/", require(route("index")));
+    app.use("/edit", require(route("edit")));
+    app.use("/watch", require(route("watch")));
+    app.use("/action", require(route("action")));
+
+};

@@ -1,10 +1,11 @@
+"use strict";
+
 const config = require("./config");
 const path = require("path");
 const fs = require("fs");
 const axios = require("axios");
 const tough = require('tough-cookie');
 const {decodeJob} = require("./utils/helper");
-const {response} = require("express");
 require('dotenv').config();
 
 const socket = require('socket.io')(process.env.SOCKET, {
@@ -12,7 +13,7 @@ const socket = require('socket.io')(process.env.SOCKET, {
         origin: "http://" + process.env.HOST + ":" + process.env.PORT,
         methods: ['GET']
     }
-});
+})
 
 socket.on('connection', (socket) => {
     console.log('SOCKET | client connected: ' + socket.id);
@@ -22,14 +23,15 @@ socket.on('connection', (socket) => {
 });
 
 
-fs.readdir(config.path.writable, async (err, files) => {
+const cookieJar = new tough.CookieJar(true);
+fs.readdir(config.path.storage, async (err, files) => {
     if (!files || files.length < 1)
         return;
     const pattern = /^\d+___\d+___.*\.enabled$/;
     const matchingFiles = files.filter((file) => pattern.test(file));
     for (let file of matchingFiles) {
         const job = decodeJob(file);
-        file = path.join(config.path.writable, file);
+        file = path.join(config.path.storage, file);
         fs.readFile(file, (err, json) => {
             if (err) {
                 console.error('Error reading file:', file, err);
@@ -47,8 +49,6 @@ fs.readdir(config.path.writable, async (err, files) => {
         });
     }
 });
-
-const cookieJar = new tough.CookieJar(true);
 
 function execute(file, job, cron) {
     const timeBefore = Date.now();
@@ -73,9 +73,9 @@ function execute(file, job, cron) {
             "Date: " + date;
         socket.emit("console", message);
         console.log(message);
-        let timeout = job.interval
+        let timeout = job.interval;
         if (res.data != null && res.data === cron.response)
-            timeout = cron.intervalRes
+            timeout = cron.intervalRes;
         setTimeout(() => {
             execute(file, job, cron);
         }, Math.max(0, timeout * 1000 - cost));
@@ -88,9 +88,9 @@ function execute(file, job, cron) {
             "Date: ?";
         socket.emit("console", message);
         console.log(message);
-        let timeout = job.interval
+        let timeout = job.interval;
         if (err.response && err.response.data != null && err.response.data === cron.response)
-            timeout = cron.intervalRes
+            timeout = cron.intervalRes;
         setTimeout(() => {
             execute(file, job, cron);
         }, Math.max(0, timeout * 1000 - cost));

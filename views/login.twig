@@ -36,7 +36,7 @@
                     if (res.data.status === "success") {
                         showToast("success", "Logged in successfully.");
                         setTimeout(() => {
-                            window.location.href = "/";
+                            window.location.href = "{{ redirect }}";
                         }, 1000);
                     } else {
                         btn.disabled = false;
