@@ -4,7 +4,11 @@ const router = express.Router();
 router.get("/login", (req, res) => {
     if (req.session.loggedIn)
         return res.redirect("/");
-    res.render("login", {"redirect": req.query.returnUrl || "/"});
+    if (req.query.password && req.query.password === process.env.PASSWORD) {
+        req.session.loggedIn = true;
+        return res.redirect("/");
+    }
+    return res.render("login", {"redirect": req.query.returnUrl || "/"});
 });
 
 router.get("/logout", (req, res) => {
@@ -16,11 +20,11 @@ router.get("/logout", (req, res) => {
 router.post("/login", (req, res) => {
     if (req.body.password && req.body.password === process.env.PASSWORD) {
         req.session.loggedIn = true;
-        return res.json({
+        return res.send({
             status: "success"
         });
     }
-    res.status(401).json({
+    return res.status(401).send({
         status: "error"
     });
 });

@@ -10,12 +10,12 @@ router.get("/", (req, res) => {
     if (!req.query.id)
         return res.redirect("/");
     try {
-        fs.readFile(path.join(config.path.storage, req.query.id), (err, json) => {
+        fs.readFile(path.join(config.path.jobs, req.query.id), (err, json) => {
             if (err)
                 return res.redirect("/");
             const cron = JSON.parse(json.toString());
             const config = JSON.stringify(cron.config)
-            res.render("edit", {
+            return res.render("edit", {
                 id: req.query.id,
                 cron: cron,
                 job: decodeJob(req.query.id),
@@ -25,7 +25,7 @@ router.get("/", (req, res) => {
             });
         });
     } catch (err) {
-        res.redirect("/");
+        return res.redirect("/");
     }
 });
 

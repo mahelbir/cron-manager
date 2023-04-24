@@ -3,7 +3,7 @@ const router = express.Router();
 
 
 router.get("/", (req, res) => {
-    res.render("watch", {host: process.env.HOST, socket: process.env.SOCKET});
+    return res.render("watch", {host: process.env.HOST, socket: process.env.SOCKET});
 });
 
 module.exports = router;

@@ -6,23 +6,36 @@ function decodeJob(text) {
     const parts = text.split("___");
     return {
         id: encodeURIComponent(text),
-        time: parseInt(parts[0]),
+        time: parseInt(parts[2].substring(0, 13)),
         interval: parseInt(parts[1]),
-        name: parts[2].replace(".disabled", "").replace(".enabled", ""),
-        enabled: parts[2].endsWith(".enabled")
+        name: parts[0],
+        enabled: text.endsWith(".enabled")
     }
 }
 
 function encodeJob(time, interval, name) {
-    return time.toString() + "___" + interval + "___" + name.replace(/[^a-zA-Z0-9\s-]/gi, "");
+    return name.replace(/[^a-zA-Z0-9\s-]/gi, "") + "___" + interval + "___" + time.toString();
 }
 
-function changeJob(){
-    fs.writeFileSync(path.join(config.path.storage, "change.cronjob"), "-");
+function changeJob() {
+    fs.writeFileSync(path.join(config.path.jobs, "change.cronjob"), "1");
 }
+
+function fetchJobs(){
+    const files = fs.readdirSync(config.path.jobs);
+    const pattern = /^[a-zA-Z0-9- ]+___\d+___\d+\.(?:enabled|disabled)$/;
+    return files.filter(file => pattern.test(file));
+}
+
+function sleep(seconds) {
+    return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+}
+
 
 module.exports = {
     decodeJob,
     encodeJob,
-    changeJob
+    changeJob,
+    fetchJobs,
+    sleep
 };

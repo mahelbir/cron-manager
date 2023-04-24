@@ -1,16 +1,15 @@
 # Cron-Manager
 
-NodeJS script to manage cron jobs asynchronously with a web panel
+NodeJS script to manage parallel cron jobs asynchronously with a web panel
 
 ## Installation
 
 1. Rename '.env.example' to '.env'
 2. Edit .env file
-    1. HOST: server ip or domain
-    2. PORT: port for web panel
-    3. SOCKET: port for realtime data
-    4. SECRET: a unique encryption key for software
-    5. PASSWORD: password for web login
+    1. PORT: port for web panel
+    2. SOCKET: port for realtime socket data
+    3. SECRET_KEY: a unique encryption key for script
+    4. PASSWORD: password for web login
 3. Run 4 commands bellow
 
 ```sh

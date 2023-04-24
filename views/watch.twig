@@ -25,12 +25,13 @@
 {% endblock %}
 
 {% block script %}
-    <script src="http://{{ host }}:{{ socket }}/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
     <script>
         const messages = document.getElementById("messages");
         let color = "secondary";
+        let socket;
         try {
-            const socket = io("http://{{ host }}:{{ socket }}");
+            socket = io(":{{ SOCKET_PORT }}", {extraHeaders: {"x-auth": "{{ SOCKET_AUTH }}"}});
             socket.on("console", function (msg) {
                 const item = document.createElement("p");
                 item.classList.add("alert-" + color);
@@ -45,5 +46,12 @@
         } catch (err) {
             showToast("danger", "Server is offline!");
         }
+
+        function checkServer() {
+            if (!socket?.connected)
+                showToast("danger", "Server is offline!");
+        }
+
+        setInterval(checkServer, 5000);
     </script>
 {% endblock %}

@@ -1,37 +1,42 @@
-"use strict";
-
+require('dotenv').config();
 const config = require("./config");
 const path = require("path");
 const fs = require("fs");
 const axios = require("axios");
 const tough = require('tough-cookie');
-const {decodeJob} = require("./utils/helper");
-require('dotenv').config();
+const socketio = require('socket.io');
+const {decodeJob, fetchJobs} = require("./utils/helper");
 
-const socket = require('socket.io')(process.env.SOCKET, {
+console.log("Cron server started...");
+io = new socketio.Server(process.env.SOCKET, {
     cors: {
-        origin: "http://" + process.env.HOST + ":" + process.env.PORT,
-        methods: ['GET']
+        origin: "*",
+        methods: ["GET"]
     }
-})
-
-socket.on('connection', (socket) => {
+});
+io.use((socket, next) => {
+    if (socket.handshake.headers['x-auth'] === Buffer.from(process.env.PASSWORD).toString('base64'))
+        next();
+    else
+        next(new Error('not authorized'));
+}).on('connection', (socket) => {
     console.log('SOCKET | client connected: ' + socket.id);
     socket.on('disconnect', () => {
         console.log('SOCKET | client disconnected: ' + socket.id);
     });
 });
+console.log("Socket server listening on " + process.env.SOCKET);
 
 
 const cookieJar = new tough.CookieJar(true);
-fs.readdir(config.path.storage, async (err, files) => {
+fs.readdir(config.path.jobs, async (err, files) => {
     if (!files || files.length < 1)
         return;
-    const pattern = /^\d+___\d+___.*\.enabled$/;
+    const pattern = /^[a-zA-Z0-9- ]+___\d+___\d+\.enabled$/;
     const matchingFiles = files.filter((file) => pattern.test(file));
     for (let file of matchingFiles) {
         const job = decodeJob(file);
-        file = path.join(config.path.storage, file);
+        file = path.join(config.path.jobs, file);
         fs.readFile(file, (err, json) => {
             if (err) {
                 console.error('Error reading file:', file, err);
@@ -71,7 +76,7 @@ function execute(file, job, cron) {
             "Status: " + res.status + " | " +
             "Completed: " + (cost / 1000).toFixed(2) + ' secs' + " | " +
             "Date: " + date;
-        socket.emit("console", message);
+        io.emit("console", message);
         console.log(message);
         let timeout = job.interval;
         if (res.data != null && res.data === cron.response)
@@ -86,7 +91,7 @@ function execute(file, job, cron) {
             "Status: " + err.message + " | " +
             "Completed: " + (cost / 1000).toFixed(2) + ' secs' + " | " +
             "Date: ?";
-        socket.emit("console", message);
+        io.emit("console", message);
         console.log(message);
         let timeout = job.interval;
         if (err.response && err.response.data != null && err.response.data === cron.response)
@@ -97,7 +102,7 @@ function execute(file, job, cron) {
     }).finally(() => {
         const time = new Date();
         fs.utimes(file, time, time, () => {
-            socket.emit("time", {file: path.basename(file), time: time.getTime()});
+            io.emit("time", {file: path.basename(file), time: time.getTime()});
         });
     });
 }

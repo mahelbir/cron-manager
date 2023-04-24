@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const config = require("../config");
 const helper = require("../utils/helper");
+const {sleep} = require("../utils/helper");
 
 
 router.post("/add", (req, res) => {
@@ -16,32 +17,34 @@ router.post("/edit", (req, res) => {
             status: "error",
             "message": "Cron doesn't exist!"
         });
-    fs.unlinkSync(path.join(config.path.storage, req.body.id));
+    fs.unlinkSync(path.join(config.path.jobs, req.body.id));
     return job(req, res);
 });
 
-router.get("/delete", (req, res) => {
+router.get("/delete", async (req, res) => {
     try {
         if (req.query.id)
             helper.changeJob();
-        fs.unlinkSync(path.join(config.path.storage, req.query.id));
+        fs.unlinkSync(path.join(config.path.jobs, req.query.id));
     } catch (err) {
-    } finally {
-        res.redirect("/");
+        console.error(err);
     }
+    await sleep(3);
+    return res.redirect("/");
 });
 
-router.get("/status/:status", (req, res) => {
+router.get("/status/:status", async (req, res) => {
     try {
         helper.changeJob();
         if (req.params.status === "enabled")
-            fs.renameSync(path.join(config.path.storage, req.query.id), path.join(config.path.storage, req.query.id.replace(".disabled", ".enabled")));
+            fs.renameSync(path.join(config.path.jobs, req.query.id), path.join(config.path.jobs, req.query.id.replace(".disabled", ".enabled")));
         else
-            fs.renameSync(path.join(config.path.storage, req.query.id), path.join(config.path.storage, req.query.id.replace(".enabled", ".disabled")));
+            fs.renameSync(path.join(config.path.jobs, req.query.id), path.join(config.path.jobs, req.query.id.replace(".enabled", ".disabled")));
     } catch (err) {
-    } finally {
-        res.redirect("/");
+        console.error(err);
     }
+    await sleep(3);
+    return res.redirect("/");
 });
 
 /**
@@ -55,7 +58,7 @@ function job(req, res) {
     else if (50 < req.body.name.length)
         error = "The name can contain up to 50 characters!";
     if (error)
-        return res.json({
+        return res.send({
             status: "error",
             "message": error
         });
@@ -78,15 +81,15 @@ function job(req, res) {
         cron.intervalRes = parseInt(req.body.intervalRes);
     }
     const fileName = helper.encodeJob(new Date().getTime(), req.body.interval, req.body.name);
-    const filePath = path.join(config.path.storage, fileName + ".enabled");
+    const filePath = path.join(config.path.jobs, fileName + ".enabled");
     helper.changeJob();
     fs.writeFile(filePath, JSON.stringify(cron), err => {
         if (err)
-            return res.json({
+            return res.send({
                 status: "error",
                 "message": err.message
             });
-        return res.json({
+        return res.send({
             status: "success",
             "message": "Successful!"
         });

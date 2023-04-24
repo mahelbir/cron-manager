@@ -13,8 +13,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
     {% block head %}{% endblock %}
 </head>
-<body>
-<div class="container mt-5">
+<body class="d-flex flex-column min-vh-100">
+<div class="container mt-5 mb-5">
     <h1 class="d-flex justify-content-center mb-5">Cron Job Manager</h1>
     {% block body %}{% endblock %}
 </div>
@@ -28,13 +28,9 @@
     </div>
 </div>
 
-<footer class="bg-secondary fixed-bottom">
-    <div class="container py-3">
-        <div class="row">
-            <div class="col-12 text-center">
-                <span>Created by <a href="https://mahmuthanelbir.com.tr" class="text-decoration-none" target="_blank">Mahmuthan Elbir</a></span>
-            </div>
-        </div>
+<footer class="bg-secondary text-center text-lg-start mt-auto">
+    <div class="container p-2 text-center">
+        <span>Created by <a href="https://mahmuthanelbir.com.tr" class="text-decoration-none" target="_blank">Mahmuthan Elbir</a></span>
     </div>
 </footer>
 {% block foot %}{% endblock %}

@@ -9,7 +9,10 @@ const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const compression = require('compression');
 const helmet = require('helmet');
+const config = require("./config/index");
 const router = require("./config/router");
+const fs = require("fs");
+const {changeJob} = require("./utils/helper");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,31 +25,40 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-
 // APPLICATION
-const sessionAge = 60 * 60 * 24 * 7;
-app.use(session({
-    name: "SESSION",
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: sessionAge * 1000
-    },
-    store: new FileStore({
-        path: path.join("storage", "sessions"),
-        ttl: sessionAge
-    })
-}));
+if (!fs.existsSync(config.path.jobs))
+    fs.mkdirSync(config.path.jobs, {recursive: true});
+if (!fs.existsSync(config.session.path))
+    fs.mkdirSync(config.session.path, {recursive: true});
+if (config.session)
+    app.use(session({
+        name: ("SESSION_" + parseInt(process.env.PORT).toString(16)).toUpperCase(),
+        secret: config.secret,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: config.session.age * 1000
+        },
+        store: new FileStore({
+            path: config.session.path,
+            ttl: config.session.age
+        })
+    }));
 app.use(helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false
 }));
 app.use(compression());
-router(app);
+try {
+    router(app);
+} catch (err) {
+    app.use(function (req, res, next) {
+        next(err);
+    });
+}
+app.locals.SOCKET_PORT = process.env.SOCKET;
+app.locals.SOCKET_AUTH = Buffer.from(process.env.PASSWORD).toString('base64');
 console.log("ENVIRONMENT: " + app.get('env'));
-console.log("http://" + process.env.HOST + ":" + process.env.PORT);
-
 
 
 // catch 404 and forward to error handler

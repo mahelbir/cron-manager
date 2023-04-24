@@ -62,7 +62,6 @@ typings/
 
 package-lock.json
 storage/*
-!storage/change.cronjob
 .idea/
 *.zip
 *.py

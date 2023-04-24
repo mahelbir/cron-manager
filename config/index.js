@@ -1,12 +1,17 @@
 const path = require("path");
 
-const root = path.join(__dirname, "../");
+const dir = {root: path.join(__dirname, "../")};
+dir.storage = path.join(dir.root, "storage");
+dir.appStorage = path.join(dir.storage, "app/");
+dir.jobs = path.join(dir.storage, "jobs/");
+
 const config = {
-    secret: process.env.SECRET,
-    path: {
-        root: root,
-        storage: path.join(root, 'storage/')
-    }
+    session: {
+        path: path.join(dir.storage, "app/sessions/"),
+        age: 60 * 60 * 24
+    },
+    secret: process.env.SECRET_KEY,
+    path: dir
 }
 
 module.exports = config;
