@@ -29,14 +29,14 @@ console.log("Socket server listening on " + process.env.SOCKET);
 
 
 const cookieJar = new tough.CookieJar(true);
-fs.readdir(config.path.jobs, async (err, files) => {
+fs.readdir(config.path.jobStorage, async (err, files) => {
     if (!files || files.length < 1)
         return;
     const pattern = /^[a-zA-Z0-9- ]+___\d+___\d+\.enabled$/;
     const matchingFiles = files.filter((file) => pattern.test(file));
     for (let file of matchingFiles) {
         const job = decodeJob(file);
-        file = path.join(config.path.jobs, file);
+        file = path.join(config.path.jobStorage, file);
         fs.readFile(file, (err, json) => {
             if (err) {
                 console.error('Error reading file:', file, err);

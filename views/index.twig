@@ -59,8 +59,7 @@
     <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
     <script>
         function deleteJob(id) {
-            const ok = confirm("Are you sure?");
-            if (ok)
+            if (confirm("Are you sure?"))
                 window.location = "/action/delete?id=" + id;
         }
 
@@ -74,24 +73,16 @@
             convertTimes(document.querySelectorAll(".time"));
         });
 
-        let socket;
         try {
-            socket = io(":{{ SOCKET_PORT }}", {extraHeaders: {"x-auth": "{{ SOCKET_AUTH }}"}});
+            const socket = io(":{{ SOCKET_PORT }}", {extraHeaders: {"x-auth": "{{ SOCKET_AUTH }}"}});
             socket.on("time", (msg) => {
                 const elem = document.querySelector("td[data-time='" + msg.file + "']");
                 elem.textContent = msg.time;
                 convertTimes([elem]);
             });
         } catch (err) {
-            showToast("danger", "Server is offline!");
+            showToast("danger", "Server error!");
         }
-
-        function checkServer() {
-            if (!socket?.connected)
-                showToast("danger", "Server is offline!");
-        }
-
-        setInterval(checkServer, 10000);
     </script>
 {% endblock %}
 

@@ -18,11 +18,11 @@ function encodeJob(time, interval, name) {
 }
 
 function changeJob() {
-    fs.writeFileSync(path.join(config.path.jobs, "change.cronjob"), "1");
+    fs.writeFileSync(path.join(config.path.jobStorage, "change.cronjob"), "1");
 }
 
 function fetchJobs(){
-    const files = fs.readdirSync(config.path.jobs);
+    const files = fs.readdirSync(config.path.jobStorage);
     const pattern = /^[a-zA-Z0-9- ]+___\d+___\d+\.(?:enabled|disabled)$/;
     return files.filter(file => pattern.test(file));
 }

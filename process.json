@@ -1,0 +1,20 @@
+{
+  "apps": [
+    {
+      "name": "cron_web",
+      "script": "npm",
+      "args": "run web",
+      "log_file": "/dev/null",
+      "out_file": "/dev/null",
+      "error_file": "/dev/null"
+    },
+    {
+      "name": "cron_run",
+      "script": "npm",
+      "args": "run cron",
+      "log_file": "/dev/null",
+      "out_file": "/dev/null",
+      "error_file": "/dev/null"
+    }
+  ]
+}

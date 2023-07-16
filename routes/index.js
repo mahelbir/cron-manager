@@ -8,7 +8,7 @@ const {fetchJobs, decodeJob} = require("../utils/helper");
 router.get("/", function (req, res, next) {
     try {
         const jobs = fetchJobs().map(file => {
-            const stats = fs.statSync(path.join(config.path.jobs, file));
+            const stats = fs.statSync(path.join(config.path.jobStorage, file));
             const obj = decodeJob(file);
             obj.run = stats.mtimeMs;
             obj.file = file;

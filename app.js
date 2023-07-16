@@ -1,18 +1,17 @@
 require('dotenv').config({override: true});
-const createError = require('http-errors');
-const express = require('express');
+const fs = require("fs");
 const path = require('path');
+const express = require('express');
+const app = express();
+const createError = require('http-errors');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const app = express();
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const compression = require('compression');
 const helmet = require('helmet');
 const config = require("./config/index");
 const router = require("./config/router");
-const fs = require("fs");
-const {changeJob} = require("./utils/helper");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,16 +23,15 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 // APPLICATION
-if (!fs.existsSync(config.path.jobs))
-    fs.mkdirSync(config.path.jobs, {recursive: true});
+if (!fs.existsSync(config.path.jobStorage))
+    fs.mkdirSync(config.path.jobStorage, {recursive: true});
 if (!fs.existsSync(config.session.path))
     fs.mkdirSync(config.session.path, {recursive: true});
 if (config.session)
     app.use(session({
         name: ("SESSION_" + parseInt(process.env.PORT).toString(16)).toUpperCase(),
-        secret: config.secret,
+        secret: process.env.SECRET,
         resave: false,
         saveUninitialized: false,
         cookie: {
@@ -68,13 +66,8 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
+    const error = req.app.get('env') === 'development' ? err : {};
+    res.status(err.status || 500).send(`<h1>${err.message}</h1><h2>${error.status || 500}</h2><pre>${error.stack || ''}</pre>`);
 });
 
 module.exports = app;

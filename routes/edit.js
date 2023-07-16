@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
     if (!req.query.id)
         return res.redirect("/");
     try {
-        fs.readFile(path.join(config.path.jobs, req.query.id), (err, json) => {
+        fs.readFile(path.join(config.path.jobStorage, req.query.id), (err, json) => {
             if (err)
                 return res.redirect("/");
             const cron = JSON.parse(json.toString());
