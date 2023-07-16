@@ -31,7 +31,7 @@ if (!fs.existsSync(config.session.path))
 if (config.session)
     app.use(session({
         name: ("SESSION_" + parseInt(process.env.PORT).toString(16)).toUpperCase(),
-        secret: process.env.SECRET,
+        secret: process.env.SECRET_KEY,
         resave: false,
         saveUninitialized: false,
         cookie: {
