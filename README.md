@@ -1,27 +1,24 @@
 # Cron Manager
 
-NodeJS web panel to manage parallel cron jobs asynchronously
+NodeJS + React web panel to manage request-based cron jobs in parallel and asynchronously
 
 ## Installation
 
-1. Rename '.env.example' to '.env'
+1. Copy '.env.example' and rename it to '.env' in 'server' folder
 2. Edit .env file
     1. PORT: port for web panel
-    2. SOCKET: port for realtime socket data
-    3. SECRET_KEY: a unique encryption key for script
-    4. PASSWORD: password for web login
-3. Run commands bellow
+    2. SECRET_KEY: a unique encryption key
+    3. PASSWORD: admin password for web login
+3. Run command below
 
 ```sh
-npm install
-npm i -g pm2
-pm2 start process.json
+npm i -g pm2 && cd client && npm i -D && npm run build && cd .. && cd server && npm i && cd .. && pm2 start process.json
 ```
 
 ### Web Panel: ```http://SERVER-IP:PORT```
-example: http://172.16.254.1:3000
 
-![Index Page](images/index.png)
+![List Page](images/list.png)
+![Job Page](images/job.png)
 ![Watch Page](images/watch.png)
 
 ## License

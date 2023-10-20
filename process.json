@@ -1,17 +1,13 @@
 {
   "apps": [
     {
-      "name": "cron_web",
+      "name": "cron",
       "script": "npm",
-      "args": "run web",
-      "log_file": "/dev/null",
-      "out_file": "/dev/null",
-      "error_file": "/dev/null"
-    },
-    {
-      "name": "cron_run",
-      "script": "npm",
-      "args": "run cron",
+      "args": "start",
+      "cwd": "server",
+      "env": {
+        "NODE_ENV": "production"
+      },
       "log_file": "/dev/null",
       "out_file": "/dev/null",
       "error_file": "/dev/null"
