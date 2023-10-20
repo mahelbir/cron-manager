@@ -1,5 +1,5 @@
 import Login from "./Login.jsx";
-import {AuthContext} from "../contexts/authContext.jsx";
+import {AuthContext} from "../contexts/AuthContext.jsx";
 import {useContext} from "react";
 import UserPanel from "./UserPanel.jsx";
 

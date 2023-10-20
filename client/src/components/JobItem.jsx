@@ -64,12 +64,14 @@ const JobStatusButton = () => {
 }
 
 const JobItem = () => {
-    const {job} = useContext(JobItemContext);
+
+    const {job, jobActivity} = useContext(JobItemContext);
+
     return (
         <tr>
             <td>{job.name}</td>
             <td>{job.interval}</td>
-            <td>{job.activity && new Date(job.activity * 1000).toLocaleString()}</td>
+            <td>{jobActivity && new Date(jobActivity * 1000).toLocaleString()}</td>
             <td>
                 <div className="btn-group">
                     <JobStatusButton></JobStatusButton>

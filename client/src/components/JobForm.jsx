@@ -14,7 +14,7 @@ const JobForm = ({message, setMessage, job, setJob, jobId}) => {
     const [isClickable, setClickable] = useState(true)
 
     useEffect(() => {
-        setAdvReq(Object.keys(job.options || {}) > 0)
+        setAdvReq((Object.keys(job.options || {}) > 0))
         setAdvRes(Boolean(job?.response?.check))
     }, [job]);
 
@@ -99,7 +99,7 @@ const JobForm = ({message, setMessage, job, setJob, jobId}) => {
                         <hr/>
                         <div className="input-group mb-3">
                             <span className="input-group-text text-bg-light">Method</span>
-                            <select name="method" className="form-control" defaultValue={job.method || "GET"}>
+                            <select name="method" className="form-control" defaultValue={job.method}>
                                 <option>GET</option>
                                 <option>POST</option>
                                 <option>PUT</option>

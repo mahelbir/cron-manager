@@ -1,5 +1,5 @@
 import axios from "axios";
-import {sleep, sleepMs} from "melperjs";
+import {sleep, sleepMs, time} from "melperjs";
 
 import socket from "../config/socket.js";
 import * as mgr from "../utils/manager.js";
@@ -64,13 +64,13 @@ export default async () => {
                 const message = [
                     `Job: ${cron.name}`,
                     `Status: ${status}`,
-                    `Completed: ${completed}`,
+                    `Completed: ${completed} secs`,
                     `Date: ${date}`,
                 ].join(" | ");
                 io.emit("watch", message);
                 console.info(message);
 
-                mgr.activity(cron.id).then(res => io.emit("time", {id: cron.id, time: res}));
+                mgr.activity(cron.id).then(res => io.emit("time", {id: cron.id, time: time()}));
 
                 if (res.data && cron?.response?.check) {
                     if (typeof res.data !== "string")

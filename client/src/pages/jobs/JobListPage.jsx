@@ -5,6 +5,7 @@ import {apiRequest} from "../../utils/helper.js";
 import JobItem from "../../components/JobItem.jsx";
 import {JobItemContext} from "../../contexts/JobItemContext.jsx";
 import {LoadingContext} from "../../contexts/LoadingContext.jsx";
+import socket, {socketEffect} from "../../utils/socket.js";
 
 
 const JobListPage = () => {
@@ -13,6 +14,19 @@ const JobListPage = () => {
     const {setLoadingIcon} = useContext(LoadingContext)
     const [error, setError] = useState(null)
     const [jobs, setJobs] = useState([])
+    const [times, setTimes] = useState({})
+    const [isCheck, setIsCheck] = useState(false)
+    const [isConnected, setIsConnected] = useState(socket.connected)
+
+    const handleActivity = (event) => {
+        setTimes(prev => ({...prev, [event.id]: event.time}))
+    }
+
+    useEffect(() => {
+        const data = {}
+        jobs.forEach(job => data[job.id] = job.activity)
+        setTimes(data)
+    }, [jobs])
 
     useEffect(() => {
         setLoadingIcon(true)
@@ -28,15 +42,27 @@ const JobListPage = () => {
 
         return () => {
             setJobs([])
+            setTimes({})
             setError(null)
         }
-    }, []);
+    }, [])
+
+    useEffect(() => socketEffect([
+        {
+            name: "time",
+            on: handleActivity
+        }
+    ], setIsConnected), [])
+
+    setTimeout(() => setIsCheck(true), 2500)
 
     return (
         <>
             {error && <Alert type="error">{error}</Alert>}
 
             {jobs.length === 0 && <Alert>No jobs found!</Alert>}
+
+            {isCheck && !isConnected && <Alert type={"error"}>Socket is not connected!</Alert>}
 
             {jobs.length > 0 && (
                 <div className="table-responsive">
@@ -51,7 +77,8 @@ const JobListPage = () => {
                         </thead>
                         <tbody>
                         {jobs.map(job => (
-                            <JobItemContext.Provider value={{job, setJobs, setError}} key={job.id}>
+                            <JobItemContext.Provider value={{job, setJobs, setError, jobActivity: times[job.id]}}
+                                                     key={job.id}>
                                 <JobItem></JobItem>
                             </JobItemContext.Provider>
                         ))}
