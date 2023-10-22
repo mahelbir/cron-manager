@@ -8,6 +8,9 @@ export const apiRequest = async (endpoint = null, config = {}) => {
     const authToken = localStorage.getItem("authToken")
     if (authToken) config.headers["x-auth"] = authToken
 
+    config.headers["content-type"] = config.headers["content-type"] || "application/json"
+    config.headers["accept"] = config.headers["accept"] || "application/json"
+
     return await axios.request({
         ...config,
         baseURL: baseURL + "/api",

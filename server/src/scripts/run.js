@@ -40,7 +40,7 @@ export default async () => {
         try {
             cron = await mgr.getById(cronId);
             if (cron.id) {
-                let timeElapsed, res, status;
+                let res, status;
                 let timeout = cron.interval;
                 const timeStart = Date.now();
 
@@ -52,13 +52,11 @@ export default async () => {
                         timeout: 120000
                     });
                     status = res.status;
-                    timeElapsed = Date.now() - timeStart;
                 } catch (e) {
                     res = e.response;
                     status = e.message
-                    timeElapsed = Date.now() - timeStart;
                 }
-
+                const timeElapsed = Date.now() - timeStart;
                 const date = res?.headers?.date || "-";
                 const completed = (timeElapsed / 1000).toFixed(2);
                 const message = [
@@ -74,7 +72,7 @@ export default async () => {
 
                 if (res.data && cron?.response?.check) {
                     if (typeof res.data !== "string")
-                        res.data = JSON.stringify(res.data)
+                        res.data = JSON.stringify(res.data);
                     res.data = res.data.trim()
                     if (res.data === cron.response.check.trim())
                         timeout = cron.response.interval;

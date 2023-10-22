@@ -9,6 +9,7 @@ import Alert from "./components/Alert.jsx";
 import JobAddPage from "./pages/jobs/JobAddPage.jsx";
 import JobEditPage from "./pages/jobs/JobEditPage.jsx";
 import LoadingContextProvider from "./contexts/LoadingContext.jsx";
+import SocketContextProvider from "./contexts/SocketContext.jsx";
 
 
 const router = createBrowserRouter([
@@ -44,7 +45,9 @@ const App = () => {
     return (
         <LoadingContextProvider>
             <AuthContextProvider>
-                <RouterProvider router={router}/>
+                <SocketContextProvider>
+                    <RouterProvider router={router}/>
+                </SocketContextProvider>
             </AuthContextProvider>
         </LoadingContextProvider>
     )

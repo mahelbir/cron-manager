@@ -1,25 +1,25 @@
-import {useEffect, useState} from "react";
-import socket, {socketEffect} from "../utils/socket.js";
+import {useContext, useEffect, useState} from "react";
+import {socketEffect} from "../utils/socket.js";
 import Alert from "../components/Alert.jsx";
+import {SocketContext} from "../contexts/SocketContext.jsx";
+import {LoadingContext} from "../contexts/LoadingContext.jsx";
 
 const WatchPage = () => {
 
-    const [isCheck, setIsCheck] = useState(false);
-    const [isConnected, setIsConnected] = useState(socket.connected);
-    const [events, setEvents] = useState([]);
+    const {socket, socketCheck, isSocketConnected, setIsSocketConnected} = useContext(SocketContext)
+    const [events, setEvents] = useState([])
 
-    useEffect(() => socketEffect([
+
+    useEffect(() => socketEffect(socket, [
         {
             name: "watch",
             on: value => setEvents(prev => [value, ...prev])
         }
-    ], setIsConnected), []);
-
-    setTimeout(() => setIsCheck(true), 2500)
+    ], setIsSocketConnected), [socket]);
 
     return (
         <>
-            {isCheck && !isConnected && <Alert type={"error"}>Socket is not connected!</Alert>}
+            {socketCheck && !isSocketConnected && <Alert type={"error"}>Socket is not connected!</Alert>}
 
             <ul className={"list-unstyled"}>
                 {

@@ -5,18 +5,19 @@ import {apiRequest} from "../../utils/helper.js";
 import JobItem from "../../components/JobItem.jsx";
 import {JobItemContext} from "../../contexts/JobItemContext.jsx";
 import {LoadingContext} from "../../contexts/LoadingContext.jsx";
-import socket, {socketEffect} from "../../utils/socket.js";
+import {initSocket, socketEffect} from "../../utils/socket.js";
+import {SocketContext} from "../../contexts/SocketContext.jsx";
 
 
 const JobListPage = () => {
 
     const {dispatchAuth} = useContext(AuthContext)
     const {setLoadingIcon} = useContext(LoadingContext)
+    const {socket, socketCheck, isSocketConnected, setIsSocketConnected} = useContext(SocketContext)
+    const [isPageReady, setIsPageReady] = useState(false)
     const [error, setError] = useState(null)
     const [jobs, setJobs] = useState([])
     const [times, setTimes] = useState({})
-    const [isCheck, setIsCheck] = useState(false)
-    const [isConnected, setIsConnected] = useState(socket.connected)
 
     const handleActivity = (event) => {
         setTimes(prev => ({...prev, [event.id]: event.time}))
@@ -29,6 +30,7 @@ const JobListPage = () => {
     }, [jobs])
 
     useEffect(() => {
+        setTimeout(() => setIsPageReady(true), 2500)
         setLoadingIcon(true)
         apiRequest("jobs")
             .then(res => {
@@ -47,22 +49,20 @@ const JobListPage = () => {
         }
     }, [])
 
-    useEffect(() => socketEffect([
+    useEffect(() => socketEffect(socket, [
         {
             name: "time",
             on: handleActivity
         }
-    ], setIsConnected), [])
-
-    setTimeout(() => setIsCheck(true), 2500)
+    ], setIsSocketConnected), [socket])
 
     return (
         <>
             {error && <Alert type="error">{error}</Alert>}
 
-            {jobs.length === 0 && <Alert>No jobs found!</Alert>}
+            {isPageReady && jobs.length === 0 && <Alert>No jobs found!</Alert>}
 
-            {isCheck && !isConnected && <Alert type={"error"}>Socket is not connected!</Alert>}
+            {socketCheck && !isSocketConnected && <Alert type={"error"}>Socket is not connected!</Alert>}
 
             {jobs.length > 0 && (
                 <div className="table-responsive">

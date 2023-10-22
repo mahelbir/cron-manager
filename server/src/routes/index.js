@@ -1,16 +1,10 @@
-import path from "path";
-
 import express from "express";
 
-import config from "../config/config.js";
+import react from "../middlewares/react.js";
 
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-    return res.sendFile(
-        path.join(config.path.static, "index.html")
-    );
-});
+router.get("/", react);
 
 export default router;

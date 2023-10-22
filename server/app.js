@@ -11,6 +11,7 @@ import {createDir} from 'melperjs';
 
 import config from './src/config/config.js';
 import router from './src/config/router.js';
+import react from './src/middlewares/react.js';
 
 
 // system
@@ -45,8 +46,11 @@ console.info("ENVIRONMENT: " + app.get('env'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
+    if (req.header("accept") !== "application/json")
+        return next();
+
     return next(createError(404));
-});
+}, react);
 
 // error handler
 app.use(function (err, req, res, next) {

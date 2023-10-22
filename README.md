@@ -12,7 +12,7 @@ NodeJS + React web panel to manage request-based cron jobs in parallel and async
 3. Run command below
 
 ```sh
-npm i -g pm2 && cd client && npm i -D && npm run build && cd .. && cd server && npm i && cd .. && pm2 start process.json
+npm i -g pm2 && cd client && npm i -D && npm run build && cd ../server && npm i && cd .. && pm2 start process.json
 ```
 
 ### Web Panel: ```http://SERVER-IP:PORT```
