@@ -21,8 +21,10 @@ const JobEditPage = () => {
                 setJob(res.data)
             })
             .catch(e => {
-                alertCall(import.meta.env.VITE_ERROR, setMessage)
                 e?.response?.status === 401 && dispatchAuth({type: "LOGOUT"})
+                if (e?.response?.data?.error?.includes?.("Invalid ID"))
+                    return setMessage(e.response.data.error)
+                alertCall(import.meta.env.VITE_ERROR, setMessage)
             })
             .finally(() => setLoadingIcon(false))
 

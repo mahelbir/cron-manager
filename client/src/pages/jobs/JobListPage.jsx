@@ -5,9 +5,22 @@ import {apiRequest} from "../../utils/helper.js";
 import JobItem from "../../components/JobItem.jsx";
 import {JobItemContext} from "../../contexts/JobItemContext.jsx";
 import {LoadingContext} from "../../contexts/LoadingContext.jsx";
-import {initSocket, socketEffect} from "../../utils/socket.js";
+import {socketEffect} from "../../utils/socket.js";
 import {SocketContext} from "../../contexts/SocketContext.jsx";
 
+
+const sortByName = (jobs) => {
+    return jobs.sort((a, b) => {
+        const nameA = a.name.toUpperCase();
+        const nameB = b.name.toUpperCase();
+        if (nameA < nameB)
+            return -1;
+        else if (nameA > nameB)
+            return 1;
+        else
+            return 0;
+    })
+}
 
 const JobListPage = () => {
 
@@ -37,8 +50,8 @@ const JobListPage = () => {
                 setJobs(res.data)
             })
             .catch(e => {
-                alertCall(import.meta.env.VITE_ERROR, setError)
                 e?.response?.status === 401 && dispatchAuth({type: "LOGOUT"})
+                alertCall(import.meta.env.VITE_ERROR, setError)
             })
             .finally(() => setLoadingIcon(false))
 
@@ -76,7 +89,7 @@ const JobListPage = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {jobs.map(job => (
+                        {sortByName(jobs).map(job => (
                             <JobItemContext.Provider value={{job, setJobs, setError, jobActivity: times[job.id]}}
                                                      key={job.id}>
                                 <JobItem></JobItem>
