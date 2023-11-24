@@ -1,6 +1,6 @@
 import classNames from "classnames";
 
-const Alert = ({type, children, className}) => {
+const Alert = ({type = "info", enabled = true, extra, children, className}) => {
 
     let style, icon;
 
@@ -21,30 +21,29 @@ const Alert = ({type, children, className}) => {
     if (!Array.isArray(className)) className = [className]
 
     return (
-        <div className={classNames([
-            'alert',
-            `alert-${style}`,
-            ...className
-        ])}><i className={classNames([
-            'fas',
-            `fa-${icon}`
-        ])}></i> {children}</div>
+        enabled && children
+            ? (
+                <>
+                    <div className={classNames([
+                        'alert',
+                        `alert-${style}`,
+                        ...className
+                    ])}><i className={classNames([
+                        'fas',
+                        `fa-${icon}`
+                    ])}></i> {children}</div>
+
+                    {
+                        extra && (
+                            <div id={"extraData"} style={{display: "none"}}>
+                                {typeof extra === "object" ? JSON.stringify(extra, null, 2) : extra}
+                            </div>
+                        )
+                    }
+                </>
+            )
+            : <></>
     )
-}
-
-Alert.defaultProps = {
-    type: 'info'
-}
-
-export const alertCall = (message, func, inputs = null) => {
-    func(message)
-    setTimeout(() => {
-        func(null)
-    }, 3000)
-    if (inputs) {
-        if (!inputs.forEach) inputs = [inputs]
-        inputs.forEach(input => input.current.value = '')
-    }
 }
 
 export default Alert

@@ -1,15 +1,17 @@
 import jwt from "jsonwebtoken";
-import createError from "http-errors";
+import {expressjwt} from "express-jwt";
 
 import config from "../config/config.js";
 
 
-export default async (req, res, next) => {
-    try {
-        const token = req.header("x-auth");
-        if (token && jwt.verify(token, config.env.SECRET_KEY))
-            return next();
-    } catch {
-    }
-    return next(createError(401));
+export const algorithm = "HS256";
+const algorithms = [algorithm];
+
+export function verifyJwt(token) {
+    return token && jwt.verify(token, config.env.SECRET_KEY, {algorithms})
 }
+
+export default expressjwt({
+    secret: config.env.SECRET_KEY,
+    algorithms
+});

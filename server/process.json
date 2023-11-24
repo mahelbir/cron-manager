@@ -4,7 +4,6 @@
       "name": "cron",
       "script": "npm",
       "args": "start",
-      "cwd": "server",
       "env": {
         "NODE_ENV": "production"
       },

@@ -7,7 +7,7 @@ import helmet from 'helmet';
 import cors from 'cors'
 import compression from 'compression';
 import timeout from 'express-timeout-handler';
-import {createDir} from 'melperjs';
+import {createDir} from 'melperjs/node';
 
 import config from './src/config/config.js';
 import router from './src/config/router.js';
@@ -38,9 +38,6 @@ app.use(helmet({
 }));
 app.use(compression());
 app.set('trust proxy', true);
-app.set('lang', app.locals.LANG);
-app.set('serverIp', app.locals.SERVER_IP);
-app.set('version', app.locals.VERSION);
 router(app);
 console.info("ENVIRONMENT: " + app.get('env'));
 

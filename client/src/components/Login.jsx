@@ -1,51 +1,62 @@
-import {useContext, useRef, useState} from "react";
-import {AuthContext} from "../contexts/AuthContext.jsx";
-import Alert, {alertCall} from "./Alert.jsx";
-import {apiRequest} from "../utils/helper.js";
+import LoadableComponent from "./Loadable.jsx";
 import Loading from "./Loading.jsx";
-import {LoadingContext} from "../contexts/LoadingContext.jsx";
+import {Formik, Form, Field} from "formik";
+import {apiRequest} from "../utils/helper.js";
+import {useMutation} from "@tanstack/react-query";
+import useAuthStore from "../stores/authStore.js";
+
+
+const Alert = LoadableComponent("components/Alert")
 
 const Login = () => {
 
-    const {dispatchAuth} = useContext(AuthContext)
-    const {loadingIcon} = useContext(LoadingContext)
-    const [error, setError] = useState(null)
-    const passwordInput = useRef()
+    const authLogin = useAuthStore(state => state.login)
+    const mutation = useMutation({
+        mutationKey: ['login'],
+        mutationFn: async (password) => {
+            return (await apiRequest("auth/login", {
+                method: "POST",
+                data: {password}
+            })).data.token
+        }
+    })
+    const {isPending, error, failureReason, mutate} = mutation
+    const initialValues = {password: ''}
 
-    const handle = (ev) => {
-        ev.preventDefault()
-
-        const password = passwordInput.current.value
-        apiRequest("auth/login", {
-            method: "POST",
-            data: {password}
+    const handleForm = ({password}, {setSubmitting, setFieldValue}) => {
+        mutate(password, {
+            onSuccess: token => authLogin(token),
+            onError: () => setTimeout(() => mutation.reset(), 2500),
+            onSettled: () => {
+                setFieldValue('password', initialValues.password)
+                setSubmitting(false)
+            }
         })
-            .then(res => {
-                dispatchAuth({
-                    type: "LOGIN",
-                    authToken: res.data.token
-                })
-            })
-            .catch(e => {
-                alertCall(e?.response?.data?.error || e.message, setError, passwordInput)
-            })
     }
 
     return (
         <div className="card-body">
 
-            {loadingIcon && <Loading></Loading>}
+            <Loading enabled={isPending}/>
+            <Alert type="error" enabled={!!failureReason}>
+                {failureReason?.response?.data?.error || import.meta.env.VITE_ERROR}
+            </Alert>
 
-            <form onSubmit={handle}>
-                {error && <Alert type="error">{error}</Alert>}
-                <div className="mb-3">
-                    <input type="password" name="password" className="form-control" placeholder="Password"
-                           ref={passwordInput} required={true} autoFocus={true}/>
-                </div>
-                <div className="text-center">
-                    <button className="btn btn-primary" type="submit"><i className="fas fa-sign-in"></i> Login</button>
-                </div>
-            </form>
+            <Formik initialValues={initialValues} onSubmit={handleForm}>
+                    <Form>
+                        <fieldset disabled={isPending}>
+                            <div className="mb-3">
+                                <Field type={"password"} name={"password"} placeholder={"Password"}
+                                       className={"form-control"} required={true} autoFocus={true}></Field>
+                            </div>
+                            <div className="text-center">
+                                <button className="btn btn-primary" type="submit">
+                                    <i className="fas fa-sign-in"></i> Login
+                                </button>
+                            </div>
+                        </fieldset>
+                    </Form>
+            </Formik>
         </div>
     )
 }

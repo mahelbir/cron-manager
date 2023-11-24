@@ -87,7 +87,6 @@ export default async () => {
         if (cronId in allCrons && cron?.id) {
             return await cronFunc(cronId);
         } else {
-            cron.name && io.emit("watch", `Job: ${cron.name} | Status: Disabled`);
             delete runningCrons[cronId];
         }
     }

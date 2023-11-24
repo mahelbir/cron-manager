@@ -1,7 +1,8 @@
-import express from 'express';
-import jwt from 'jsonwebtoken';
+import express from "express";
+import jwt from "jsonwebtoken";
 
 import config from "../config/config.js";
+import {algorithm} from "../middlewares/jwt.js";
 
 
 const router = express.Router();
@@ -11,6 +12,7 @@ router.post("/login", async (req, res, next) => {
         if (req.body.password.toString() === config.env.PASSWORD.toString())
             return res.json({
                 token: jwt.sign({}, config.env.SECRET_KEY, {
+                    algorithm,
                     expiresIn: "7d"
                 })
             });
