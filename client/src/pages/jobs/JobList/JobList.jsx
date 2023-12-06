@@ -32,7 +32,6 @@ const JobList = () => {
     const toggleCategoryState = useCategoryStateStore(state => state.toggleCategoryState)
 
     useDeepCompareEffect(() => {
-        console.log("render")
         if (jobs) {
             const categories = {}
             const states = {...categoryStates};

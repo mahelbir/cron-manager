@@ -2,7 +2,7 @@
 
 Node.js + React web panel to manage request-based cron jobs in parallel and asynchronously
 
-## Installation
+## Installation on Linux
 
 1. Copy '.env.example' and rename it to '.env' in 'server' folder (```cp server/.env.example server/.env```)
 2. Edit .env file (```nano server/.env```)
@@ -12,7 +12,7 @@ Node.js + React web panel to manage request-based cron jobs in parallel and asyn
 3. Build and run
 
 ```sh
-cd client && npm i -D && npm run build && cd ../server && npm i && npm i pm2 -g  && pm2 start process.json
+cd client && rm -rf node_modules && npm i -D && npm run build && cd ../server && npm i && npm i pm2 -g  && pm2 start process.json
 ```
 
 ### Web Panel: ```http://SERVER-IP:PORT```
