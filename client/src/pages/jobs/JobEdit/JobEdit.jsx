@@ -1,4 +1,4 @@
-import {apiRequest} from "../../../utils/helper.js";
+import {apiRequest, failureMessage} from "../../../utils/helper.js";
 import {useParams} from "react-router-dom";
 import {useQuery} from "@tanstack/react-query";
 import Loading from "../../../components/Loading.jsx";
@@ -24,7 +24,7 @@ const JobEdit = () => {
     return (
         <>
             <Loading enabled={isFetching}/>
-            <Alert type="error" extra={failureReason} enabled={!!failureReason}>{failureReason?.response?.data?.error|| import.meta.env.VITE_ERROR}</Alert>
+            <Alert type="error" extra={failureReason} enabled={!!failureReason}>{failureMessage(failureReason)}</Alert>
             <JobForm job={job} jobId={jobId}></JobForm>
         </>
     )

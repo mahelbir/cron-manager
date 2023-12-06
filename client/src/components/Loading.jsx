@@ -10,17 +10,15 @@ TopBarProgress.config({
     shadowColor: "#ddd",
     shadowBlur: 3
 });
-export const TopLoading = () => <TopBarProgress />
+export const TopLoading = ({enabled}) => enabled && <TopBarProgress/>
 
 const Loading = ({enabled = false, size = 4}) => {
     return (
-        enabled
-            ? (
-                <div className="text-center my-5">
-                    <i className={classNames(["fas", "fa-spinner", "fa-spin", `fa-${size}x`])}></i>
-                </div>
-            )
-            : <></>
+        enabled && (
+            <div className="text-center my-5">
+                <i className={classNames(["fas", "fa-spinner", "fa-spin", `fa-${size}x`])}></i>
+            </div>
+        )
     )
 }
 

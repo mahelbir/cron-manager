@@ -1,6 +1,6 @@
 import {create} from 'zustand'
 
-const useAuthStore = create((set, get) => ({
+const useAuthStore = create((set) => ({
     authToken: localStorage.getItem("authToken") || null,
     login: (authToken) => {
         localStorage.setItem("authToken", authToken)

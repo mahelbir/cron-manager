@@ -1,7 +1,7 @@
 import LoadableComponent from "./Loadable.jsx";
 import Loading from "./Loading.jsx";
 import {Formik, Form, Field} from "formik";
-import {apiRequest} from "../utils/helper.js";
+import {apiRequest, failureMessage} from "../utils/helper.js";
 import {useMutation} from "@tanstack/react-query";
 import useAuthStore from "../stores/authStore.js";
 
@@ -23,13 +23,12 @@ const Login = () => {
     const {isPending, error, failureReason, mutate} = mutation
     const initialValues = {password: ''}
 
-    const handleForm = ({password}, {setSubmitting, setFieldValue}) => {
+    const handleForm = ({password}, {setFieldValue}) => {
         mutate(password, {
             onSuccess: token => authLogin(token),
             onError: () => setTimeout(() => mutation.reset(), 2500),
             onSettled: () => {
                 setFieldValue('password', initialValues.password)
-                setSubmitting(false)
             }
         })
     }
@@ -39,7 +38,7 @@ const Login = () => {
 
             <Loading enabled={isPending}/>
             <Alert type="error" enabled={!!failureReason}>
-                {failureReason?.response?.data?.error || import.meta.env.VITE_ERROR}
+                {failureMessage(failureReason)}
             </Alert>
 
             <Formik initialValues={initialValues} onSubmit={handleForm}>

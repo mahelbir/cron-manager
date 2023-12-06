@@ -2,7 +2,7 @@ import {useContext, useEffect} from "react";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {Link} from "react-router-dom";
 import classNames from "classnames";
-import {JobItemContext} from "../../../../contexts/JobItemContext.jsx";
+import {JobItemContext} from "../../../../stores/AppContexts.js";
 import {apiRequest} from "../../../../utils/helper.js";
 import {cloneDeep} from "lodash-es";
 import {TopLoading} from "../../../../components/Loading.jsx";
@@ -21,6 +21,7 @@ const JobRemoveButton = () => {
             const isDeleted = res.status === 204
             if (!isDeleted)
                 throw Error("Delete error")
+            return isDeleted
         },
         onSuccess: () => {
             queryClient.setQueryData(['JobList'], prev => prev.filter(item => item.id !== job.id))
@@ -37,7 +38,7 @@ const JobRemoveButton = () => {
 
     return (
         <>
-            {isPending && <TopLoading/>}
+            <TopLoading enabled={isPending}/>
             <button className="btn btn-danger btn-sm" onClick={handle} disabled={isPending}>
                 <i className="fas fa-trash"></i>
             </button>
@@ -78,7 +79,7 @@ const JobStatusButton = () => {
 
     return (
         <>
-            {isPending && <TopLoading/>}
+            <TopLoading enabled={isPending}/>
             <button
                 className={classNames(
                     'btn-sm',

@@ -1,9 +1,11 @@
 import axios from "axios";
-import {sleep, sleepMs, time} from "melperjs";
+import {cookieDict, cookieHeader, sleep, sleepMs, time} from "melperjs";
 
 import socket from "../config/socket.js";
 import * as mgr from "../utils/manager.js";
 
+
+const cookieJar = {};
 
 export default async () => {
     const io = socket.get();
@@ -43,13 +45,29 @@ export default async () => {
                 let res, status;
                 let timeout = cron.interval;
                 const timeStart = Date.now();
+                const domain = new URL(cron.url).host;
+                cookieJar[domain] = cookieJar[domain] || {}
 
                 try {
-                    res = await axios.request({
+                    const client = axios.create({
+                        timeout: 120000
+                    })
+                    client.interceptors.response.use(response => {
+                        cookieJar[domain] = {...cookieJar[domain], ...cookieDict(response)};
+                        return response;
+                    }, error => {
+                        cookieJar[domain] = {...cookieJar[domain], ...cookieDict(error.response)};
+                        return Promise.reject(error);
+                    });
+                    cron.options.headers = cron.options.headers || {}
+                    res = await client.request({
                         ...cron.options,
                         url: cron.url,
                         method: cron.method,
-                        timeout: 120000
+                        headers: {
+                            ...cron.options.headers,
+                            cookie: cookieHeader(cookieJar[domain])
+                        }
                     });
                     status = res.status;
                 } catch (e) {
@@ -58,7 +76,7 @@ export default async () => {
                 }
                 const timeElapsed = Date.now() - timeStart;
                 const date = res?.headers?.date || "-";
-                const completed = (timeElapsed / 1000).toFixed(2);
+                const completed = Math.max(0.01, (timeElapsed / 1000)).toFixed(2);
                 const message = [
                     `Job: ${cron.name}`,
                     `Status: ${status}`,
@@ -68,9 +86,9 @@ export default async () => {
                 io.emit("watch", message);
                 console.info(message);
 
-                mgr.activity(cron.id).then(res => io.emit("time", {id: cron.id, time: time()}));
+                mgr.activity(cron.id).then(() => io.emit("time", {id: cron.id, time: time()}));
 
-                if (res.data && cron?.response?.check) {
+                if (res?.data && cron?.response?.check) {
                     if (typeof res.data !== "string")
                         res.data = JSON.stringify(res.data);
                     res.data = res.data.trim()
@@ -80,7 +98,9 @@ export default async () => {
 
                 await sleepMs(Math.max(0, timeout * 1000 - timeElapsed));
             }
-        } catch {
+        } catch (e) {
+            console.error("RUN", e)
+            await sleepMs((cron.interval || 10) * 1000);
         }
 
 

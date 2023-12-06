@@ -1,11 +1,10 @@
 import {Field, Form, Formik} from "formik";
 import LoadableComponent from "../../../components/Loadable.jsx";
 import {useEffect, useState} from "react";
-import {apiRequest, sleepMs} from "../../../utils/helper.js";
+import {apiRequest, failureMessage} from "../../../utils/helper.js";
 import {useAutoAnimate} from "@formkit/auto-animate/react";
 import Loading from "../../../components/Loading.jsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {cloneDeep} from "lodash-es";
 
 
 const Alert = LoadableComponent("components/Alert")
@@ -56,7 +55,7 @@ const JobForm = ({job = {}, jobId}) => {
 
     const handleAdvRes = () => setAdvRes(!advRes)
 
-    const handleForm = async (values, {setSubmitting}) => {
+    const handleForm = async (values) => {
         let data = {
             name: values.name,
             url: values.url,
@@ -94,7 +93,7 @@ const JobForm = ({job = {}, jobId}) => {
             <Loading enabled={isPending}/>
             <Alert type="success" enabled={isSuccess}>Successful</Alert>
             <Alert type="error" enabled={!!failureReason || !!error}>
-                {failureReason?.response?.data?.error || error || import.meta.env.VITE_ERROR}
+                {failureMessage(failureReason)}
             </Alert>
 
             {(!jobId || (jobId && job?.id)) && (

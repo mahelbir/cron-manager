@@ -1,38 +1,19 @@
-import {useEffect, useState} from "react";
+import {Fragment, useEffect, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
-import Loading from "../../../components/Loading.jsx";
-import LoadableComponent from "../../../components/Loadable.jsx";
-import {JobItemContext} from "../../../contexts/JobItemContext.jsx";
 import useSocketStore from "../../../stores/socketStore.js";
 import {socketEffect} from "../../../utils/socket.js";
-import {apiRequest} from "../../../utils/helper.js";
-import JobItem from "./components/JobItem.jsx";
-import {useAutoAnimate} from "@formkit/auto-animate/react";
+import {apiRequest, failureMessage} from "../../../utils/helper.js";
+import LoadableComponent from "../../../components/Loadable.jsx";
+import Loading from "../../../components/Loading.jsx";
+import JobCategory from "./components/JobCategory.jsx";
+import useCategoryStateStore from "../../../stores/categoryStateStore.js";
+import useDeepCompareEffect from "react-use/lib/useDeepCompareEffect.js"
 
 
 const Alert = LoadableComponent("components/Alert")
 
-const sortByName = (jobs) => {
-    return jobs.sort((a, b) => {
-        const nameA = a.name.toUpperCase();
-        const nameB = b.name.toUpperCase();
-        if (nameA < nameB)
-            return -1;
-        else if (nameA > nameB)
-            return 1;
-        else
-            return 0;
-    })
-}
-
 const JobList = () => {
 
-    const [animate] = useAutoAnimate()
-    const socket = useSocketStore(state => state.socket)
-    const isSocketLoading = useSocketStore(state => state.isLoading)
-    const isSocketConnected = useSocketStore(state => state.isConnected)
-    const [error, setError] = useState(null)
-    const [times, setTimes] = useState({})
     const {isFetching, isSuccess, failureReason: errorJobs, data: jobs} = useQuery({
         queryKey: ['JobList'],
         queryFn: async () => {
@@ -40,14 +21,52 @@ const JobList = () => {
             return res.data
         }
     })
+    const socket = useSocketStore(state => state.socket)
+    const isSocketLoading = useSocketStore(state => state.isLoading)
+    const isSocketConnected = useSocketStore(state => state.isConnected)
+    const [error, setError] = useState(null)
+    const [times, setTimes] = useState({})
+    const [categories, setCategories] = useState({})
+    const categoryStates = useCategoryStateStore(state => state.categoryStates)
+    const setCategoryStates = useCategoryStateStore(state => state.setCategoryStates)
+    const toggleCategoryState = useCategoryStateStore(state => state.toggleCategoryState)
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
+        console.log("render")
         if (jobs) {
-            const times = {}
-            jobs.forEach(job => times[job.id] = job.activity)
-            setTimes(times)
+            const categories = {}
+            const states = {...categoryStates};
+            jobs.forEach((job, jobIndex) => {
+                const category = new URL(job.url).host
+                categories[category] = categories[category] || []
+                categories[category].push(jobIndex)
+                if (states[category] === undefined && job.status)
+                    states[category] = true
+                return categories
+            })
+            {
+                let expandedAny = false
+                const categoryNames = Object.keys(categories).sort()
+                for (const categoryName of categoryNames) {
+                    if (states[categoryName]) {
+                        expandedAny = true
+                        break
+                    }
+                }
+                const firstCategory = categoryNames[0];
+                if (states[firstCategory] === undefined && !expandedAny) states[firstCategory] = true
+            }
+            setCategories(categories)
+            setCategoryStates(states)
+            setTimes(jobs.reduce(
+                (acc, job) => {
+                    acc[job.id] = job.activity;
+                    return acc
+                },
+                {}
+            ))
         }
-    }, [jobs?.length])
+    }, [jobs])
 
     useEffect(() => socketEffect(socket, [
         {
@@ -66,7 +85,7 @@ const JobList = () => {
                 enabled={!!errorJobs || !!error}
                 extra={errorJobs}
             >
-                {import.meta.env.VITE_ERROR}
+                {failureMessage(errorJobs)}
             </Alert>
 
             {jobs?.length > 0 && (
@@ -80,14 +99,18 @@ const JobList = () => {
                             <td></td>
                         </tr>
                         </thead>
-                        <tbody ref={animate}>
-                        {sortByName(jobs).map(job => (
-                            <JobItemContext.Provider
-                                value={{job, setError, jobActivity: times[job.id]}}
-                                key={job.id}
-                            >
-                                <JobItem/>
-                            </JobItemContext.Provider>
+                        <tbody>
+                        {Object.keys(categories).sort().map(category => (
+                            <JobCategory
+                                key={category}
+                                category={category}
+                                categories={categories}
+                                categoryStates={categoryStates}
+                                toggleCategoryState={toggleCategoryState}
+                                setError={setError}
+                                times={times}
+                                jobs={jobs}
+                            />
                         ))}
                         </tbody>
                     </table>

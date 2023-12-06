@@ -4,7 +4,7 @@ import {TopLoading} from "./Loading.jsx";
 
 
 const LoadableComponent = (component) => loadable(() => timeout(import(`../${component}.jsx`), 15000), {
-    fallback: <TopLoading/>
+    fallback: <TopLoading enabled={true}/>
 })
 
 export default LoadableComponent

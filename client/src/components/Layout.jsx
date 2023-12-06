@@ -1,5 +1,4 @@
 import useAuthStore from "../stores/authStore.js";
-import {useAutoAnimate} from "@formkit/auto-animate/react";
 import LoadableComponent from "./Loadable.jsx";
 
 
@@ -24,8 +23,10 @@ const Layout = () => {
 
             <footer className="bg-light text-lg-start mt-auto">
                 <div className="container p-2 text-center">
-                    <span>Copyright &copy; <a href="https://mahmuthanelbir.com.tr" className="text-decoration-none"
-                                              target="_blank">Mahmuthan Elbir</a></span>
+                    <span>
+                        Copyright &copy;&nbsp;
+                        <a href="https://mahmuthanelbir.com.tr" className="text-decoration-none" target="_blank">Mahmuthan Elbir</a>
+                    </span>
                 </div>
             </footer>
         </div>

@@ -1,7 +1,7 @@
 import axios from "axios";
 import useAuthStore from "../stores/authStore.js";
 
-export const baseURL = (import.meta.env.DEV ? import.meta.env.VITE_DEV_API : '');
+export const baseURL = (import.meta.env.DEV ? import.meta.env.VITE_DEV_API : '')
 
 export const apiRequest = async (endpoint = null, config = {}) => {
     config.headers = config.headers || {}
@@ -19,13 +19,17 @@ export const apiRequest = async (endpoint = null, config = {}) => {
             url: endpoint,
             method: config.method || "GET",
             timeout: 60000
-        });
+        })
     } catch (e) {
         e?.response?.status === 401 && useAuthStore.getState().logout()
-        throw e;
+        throw e
     }
 }
 
+export const failureMessage = (failureReason) => {
+    return failureReason?.response?.data?.error || import.meta.env.VITE_ERROR
+}
+
 export const sleepMs = (milliseconds) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds));
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
 }

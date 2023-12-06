@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import path from 'path';
 
 import express from 'express';
@@ -7,7 +8,6 @@ import helmet from 'helmet';
 import cors from 'cors'
 import compression from 'compression';
 import timeout from 'express-timeout-handler';
-import {createDir} from 'melperjs/node';
 
 import config from './src/config/config.js';
 import router from './src/config/router.js';
@@ -29,8 +29,8 @@ app.use(express.urlencoded({limit: '50mb', parameterLimit: 50000, extended: true
 
 
 // application
-createDir(path.join(config.path.storage, "app"));
-createDir(path.join(config.path.jobs));
+fs.mkdirSync(path.join(config.path.storage, "app"), {recursive: true});
+fs.mkdirSync(path.join(config.path.jobs), {recursive: true});
 app.use(cors());
 app.use(helmet({
     contentSecurityPolicy: false,
