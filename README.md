@@ -23,4 +23,4 @@ cd client && rm -rf node_modules && npm i -D && npm run build && cd ../server &&
 
 ## License
 
-The MIT License (MIT). Please see [License File](LISENCE) for more information.
+The MIT License (MIT). Please see [License File](LICENSE) for more information.
