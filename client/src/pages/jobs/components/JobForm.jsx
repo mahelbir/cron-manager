@@ -19,6 +19,7 @@ const JobForm = ({job = {}, jobId}) => {
     const initialValues = {
         name: '',
         interval: 60,
+        concurrent: 1,
         url: '',
         method: 'GET',
         options: '{}',
@@ -30,6 +31,7 @@ const JobForm = ({job = {}, jobId}) => {
         if (job?.id) {
             initialValues.name = job.name
             initialValues.interval = job.interval
+            initialValues.concurrent = job.concurrent
             initialValues.url = job.url
             initialValues.method = job.method.toUpperCase()
             initialValues.options = JSON.stringify(job.options, null, 4)
@@ -60,6 +62,7 @@ const JobForm = ({job = {}, jobId}) => {
             name: values.name,
             url: values.url,
             interval: +values.interval,
+            concurrent: +values.concurrent,
             status: job?.status ?? true,
             method: values.method
         }
@@ -108,6 +111,10 @@ const JobForm = ({job = {}, jobId}) => {
                                 <span className="input-group-text text-bg-light">Interval (seconds)</span>
                                 <Field type="number" name="interval" className="form-control" min="0"
                                        required={true}/>
+                            </div>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text text-bg-light">Concurrent Jobs</span>
+                                <Field type="number" name="concurrent" className="form-control" min="1" required={true}/>
                             </div>
                             <div className="input-group mb-3">
                                 <span className="input-group-text text-bg-light">Visit URL</span>

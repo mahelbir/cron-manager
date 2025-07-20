@@ -87,6 +87,7 @@ export async function set(data, id = null) {
         id,
         "name": data.name,
         "interval": parseInt(data.interval) || 0,
+        "concurrent": parseInt(data.concurrent) || 1,
         "status": Boolean(data.status ?? true),
         "url": data.url,
         "method": data.method || "GET",

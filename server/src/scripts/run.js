@@ -16,11 +16,15 @@ export default async () => {
         try {
             allCrons = {};
             cronData = {};
-            (await mgr.getAll(true)).forEach(cron => allCrons[cron.id] = true);
-            for (const cronId in allCrons) {
-                if (!(cronId in runningCrons)) {
-                    runningCrons[cronId] =
-                        cronFunc(cronId)
+            (await mgr.getAll(true)).forEach(cron => {
+                for (let i = 1; i <= cron.concurrent; i++) {
+                    allCrons[cron.id + "_" + i] = cron.id;
+                }
+            });
+            for (const cronKey in allCrons) {
+                if (!(cronKey in runningCrons)) {
+                    runningCrons[cronKey] =
+                        cronFunc(cronKey, allCrons[cronKey])
                             .then(() => {
                             })
                             .catch(() => {
@@ -37,9 +41,10 @@ export default async () => {
     }
 
 
-    async function cronFunc(cronId) {
+    async function cronFunc(cronKey, cronId) {
         let cron;
         try {
+            const cronIndex = +cronKey.split("_")[1];
             cron = await mgr.getById(cronId);
             if (cron.id) {
                 let res, status;
@@ -78,7 +83,7 @@ export default async () => {
                 const date = res?.headers?.date || "-";
                 const completed = Math.max(0.01, (timeElapsed / 1000)).toFixed(2);
                 const message = [
-                    `Job: ${cron.name}`,
+                    `Job: ${cron.name} #${cronIndex}`,
                     `Status: ${status}`,
                     `Completed: ${completed} secs`,
                     `Date: ${date}`,
@@ -104,10 +109,10 @@ export default async () => {
         }
 
 
-        if (cronId in allCrons && cron?.id) {
-            return await cronFunc(cronId);
+        if (cronKey in allCrons && cron?.id) {
+            return await cronFunc(cronKey, cronId);
         } else {
-            delete runningCrons[cronId];
+            delete runningCrons[cronKey];
         }
     }
 }

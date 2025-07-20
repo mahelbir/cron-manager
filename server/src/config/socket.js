@@ -9,10 +9,9 @@ let io = null;
 
 export default {
     init: function (server) {
-        console.log(config.env.NODE_ENV)
         io = new Server(server, {
             cors: {
-                origin: (config.env.NODE_ENV.trim() === 'development' ? ['http://localhost:5173'] : null),
+                origin: (config.env.NODE_ENV=== 'production' ? null : ['http://localhost:5173']),
                 methods: ["GET"]
             }
         });
