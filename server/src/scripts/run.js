@@ -71,6 +71,7 @@ export default async () => {
                         method: cron.method,
                         headers: {
                             ...cron.options.headers,
+                            "x-cron-key": cronKey,
                             cookie: cookieHeader(cookieJar[domain])
                         }
                     });
