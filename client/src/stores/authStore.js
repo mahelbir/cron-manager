@@ -1,4 +1,5 @@
 import {create} from 'zustand'
+import {baseURL} from "../utils/helper.js";
 
 const useAuthStore = create((set) => ({
     authToken: localStorage.getItem("authToken") || null,
@@ -8,7 +9,7 @@ const useAuthStore = create((set) => ({
     },
     logout: () => {
         localStorage.removeItem("authToken")
-        set(() => ({authToken: null}))
+        window.location.href = baseURL + "/api/auth/logout"
     }
 }))
 

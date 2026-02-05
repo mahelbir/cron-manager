@@ -1,10 +1,7 @@
-import express from "express";
+import {newRoute} from "../core/router.js";
+import hostingMiddleware from "../middlewares/hosting-middleware.js";
 
-import react from "../middlewares/react.js";
 
+const router = await newRoute("/");
 
-const router = express.Router();
-
-router.get("/", react);
-
-export default router;
+router.get("/", hostingMiddleware);

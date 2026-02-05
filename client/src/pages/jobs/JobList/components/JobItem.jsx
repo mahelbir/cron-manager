@@ -55,7 +55,7 @@ const JobStatusButton = () => {
     const {isPending, error, mutate} = useMutation({
         mutationKey: ['JobStatus', job.id],
         mutationFn: async () => {
-            return (await apiRequest(`jobs/${job.id}`, {
+            return (await apiRequest(`jobs/${job.id}/toggle`, {
                 method: "PATCH",
                 data: {
                     status: !isActive
@@ -114,7 +114,7 @@ const JobItem = () => {
         <tr>
             <td>{job.name}</td>
             <td>{job.interval}</td>
-            <td>{jobActivity && new Date(jobActivity * 1000).toLocaleString()}</td>
+            <td>{jobActivity > 0 && new Date(jobActivity * 1000).toLocaleString()}</td>
             <td>
                 <div className="btn-group">
                     <JobStatusButton/>

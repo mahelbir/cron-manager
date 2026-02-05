@@ -2,8 +2,9 @@ import LoadableComponent from "./Loadable.jsx";
 import Loading from "./Loading.jsx";
 import {Formik, Form, Field} from "formik";
 import {apiRequest, failureMessage} from "../utils/helper.js";
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQuery} from "@tanstack/react-query";
 import useAuthStore from "../stores/authStore.js";
+import {useEffect, useState} from "react";
 
 
 const Alert = LoadableComponent("components/Alert")
@@ -11,6 +12,39 @@ const Alert = LoadableComponent("components/Alert")
 const Login = () => {
 
     const authLogin = useAuthStore(state => state.login)
+    const [tokenProcessed, setTokenProcessed] = useState(false)
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search)
+        const authToken = params.get("authToken")
+        if (authToken) {
+            params.delete("authToken")
+            const newUrl = window.location.pathname + (params.toString() ? "?" + params.toString() : "")
+            window.history.replaceState({}, "", newUrl)
+            authLogin(authToken)
+        }
+        setTokenProcessed(true)
+    }, [window.location.search])
+
+    const methodsQuery = useQuery({
+        queryKey: ['methods'],
+        queryFn: async () => {
+            return (await apiRequest("auth/methods", {
+                method: "POST",
+                data: {
+                    state: window.location.href
+                }
+            })).data
+        },
+        enabled: tokenProcessed
+    })
+
+    useEffect(() => {
+        if (methodsQuery.data?.sso?.redirect) {
+            window.location.href = methodsQuery.data.sso.redirect
+        }
+    }, [methodsQuery.data])
+
     const mutation = useMutation({
         mutationKey: ['login'],
         mutationFn: async (password) => {
@@ -20,7 +54,7 @@ const Login = () => {
             })).data.token
         }
     })
-    const {isPending, error, failureReason, mutate} = mutation
+    const {isPending, failureReason, mutate} = mutation
     const initialValues = {password: ''}
 
     const handleForm = ({password}, {setFieldValue}) => {
@@ -36,12 +70,19 @@ const Login = () => {
     return (
         <div className="card-body">
 
-            <Loading enabled={isPending}/>
+            <Loading enabled={isPending || methodsQuery.isLoading || !tokenProcessed}/>
             <Alert type="error" enabled={!!failureReason}>
                 {failureMessage(failureReason)}
             </Alert>
 
-            <Formik initialValues={initialValues} onSubmit={handleForm}>
+            {methodsQuery.isSuccess && !methodsQuery.data?.sso?.redirect && !methodsQuery.data?.password && (
+                <Alert type="error" enabled={true}>
+                    Login disabled
+                </Alert>
+            )}
+
+            {methodsQuery.isSuccess && methodsQuery.data?.password && (
+                <Formik initialValues={initialValues} onSubmit={handleForm}>
                     <Form>
                         <fieldset disabled={isPending}>
                             <div className="mb-3">
@@ -55,7 +96,8 @@ const Login = () => {
                             </div>
                         </fieldset>
                     </Form>
-            </Formik>
+                </Formik>
+            )}
         </div>
     )
 }

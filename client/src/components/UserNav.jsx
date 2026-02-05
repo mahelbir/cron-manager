@@ -16,7 +16,11 @@ const UserNav = () => {
     const setSocketConnected = useSocketStore(state => state.setConnected)
 
     useEffect(() => {
-        !socket?.connected && setSocket(initSocket(authToken))
+        const newSocket = initSocket(authToken)
+        setSocket(newSocket)
+        return () => {
+            newSocket?.disconnect()
+        }
     }, [authToken]);
 
     useEffect(() => socketEffect(socket, [

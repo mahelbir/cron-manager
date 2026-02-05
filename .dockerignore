@@ -1,0 +1,14 @@
+node_modules
+client/node_modules
+server/node_modules
+client/dist
+.git
+.idea
+*.log
+.env
+.env.*
+*.db
+*.cache
+test.js
+images
+server/src/storage/*

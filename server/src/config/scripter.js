@@ -1,7 +1,8 @@
-import runCron from "../scripts/run.js";
+import backgroundService from "../scripts/background-service.js";
 
-export default async app => {
-
-    // Test Cron
-    runCron().then(() => {}).catch(e => console.error("SCRIPT:runCron:ERROR: " + e.message));
-}
+export default [
+    {
+        "script": backgroundService,
+        "args": ["p1"]
+    }
+];

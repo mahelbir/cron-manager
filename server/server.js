@@ -1,15 +1,11 @@
 import * as http from 'http';
-
 import app from './app.js';
-import socket from './src/config/socket.js';
-import scripter from './src/config/scripter.js';
-import config from './src/config/config.js';
-
+import socket from './src/core/socket.js';
 
 /**
  * Get port from environment and store in Express.
  */
-let port = config.env.PORT;
+let port = normalizePort(process.env.PORT);
 app.set('port', port);
 
 /**
@@ -21,7 +17,9 @@ let server = http.createServer(app);
 /**
  * Initialize WebSocket
  */
+
 socket.init(server);
+app.set('socketAuth', app.locals.SOCKET_AUTH);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -85,17 +83,6 @@ function onError(error) {
 
 function onListening() {
     let addr = server.address();
-    let bind = typeof addr === 'string'
-        ? 'pipe ' + addr
-        : 'port ' + addr.port;
-    console.info('Listening on ' + bind);
+    let bind = typeof addr === 'string' ? addr : addr.port;
+    console.info(`Listening on http://${app.get('serverIp')}:${bind}`);
 }
-
-/**
- * Start scripts
- */
-scripter(app)
-    .then(() => {
-    })
-    .catch(() => {
-    });

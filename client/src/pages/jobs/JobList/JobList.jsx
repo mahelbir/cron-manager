@@ -36,7 +36,7 @@ const JobList = () => {
             const categories = {}
             const states = {...categoryStates};
             jobs.forEach((job, jobIndex) => {
-                const category = new URL(job.url).host
+                const category = job.tag || new URL(job.url).host
                 categories[category] = categories[category] || []
                 categories[category].push(jobIndex)
                 if (states[category] === undefined && job.status)

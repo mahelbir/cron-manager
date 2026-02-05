@@ -1,6 +1,6 @@
 import {Field, Form, Formik} from "formik";
 import LoadableComponent from "../../../components/Loadable.jsx";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {apiRequest, failureMessage} from "../../../utils/helper.js";
 import {useAutoAnimate} from "@formkit/auto-animate/react";
 import Loading from "../../../components/Loading.jsx";
@@ -16,27 +16,21 @@ const JobForm = ({job = {}, jobId}) => {
     const queryClient = useQueryClient()
     const [advReq, setAdvReq] = useState(false)
     const [advRes, setAdvRes] = useState(false)
-    const initialValues = {
-        name: '',
-        interval: 60,
-        concurrent: 1,
-        url: '',
-        method: 'GET',
-        options: '{}',
-        resCheck: '',
-        resInterval: 30
-    }
+    const initialValues = useMemo(() => ({
+        name: job?.name || '',
+        tag: job?.tag || '',
+        interval: job?.interval || 60,
+        concurrent: job?.concurrent || 1,
+        url: job?.url || '',
+        method: job?.method?.toUpperCase() || 'GET',
+        options: job?.options ? JSON.stringify(job.options, null, 4) : '{}',
+        resCheck: job?.response?.check || '',
+        resInterval: job?.response?.interval || 30
+    }), [job?.id]);
+
 
     useEffect(() => {
         if (job?.id) {
-            initialValues.name = job.name
-            initialValues.interval = job.interval
-            initialValues.concurrent = job.concurrent
-            initialValues.url = job.url
-            initialValues.method = job.method.toUpperCase()
-            initialValues.options = JSON.stringify(job.options, null, 4)
-            initialValues.resCheck = job?.response?.check || initialValues.resCheck
-            initialValues.resInterval = job?.response?.interval || initialValues.resInterval
             setAdvReq(Object.keys(job.options).length > 0 || job.method.toUpperCase() !== "GET")
             setAdvRes(!!job?.response?.check)
         }
@@ -60,6 +54,7 @@ const JobForm = ({job = {}, jobId}) => {
     const handleForm = async (values) => {
         let data = {
             name: values.name,
+            tag: values.tag || '',
             url: values.url,
             interval: +values.interval,
             concurrent: +values.concurrent,
@@ -100,7 +95,7 @@ const JobForm = ({job = {}, jobId}) => {
             </Alert>
 
             {(!jobId || (jobId && job?.id)) && (
-                <Formik initialValues={initialValues} onSubmit={handleForm}>
+                <Formik initialValues={initialValues} onSubmit={handleForm} enableReinitialize>
                     <Form autoComplete="off">
                         <fieldset disabled={isPending} ref={animate}>
                             <div className="input-group mb-3">
@@ -119,6 +114,10 @@ const JobForm = ({job = {}, jobId}) => {
                             <div className="input-group mb-3">
                                 <span className="input-group-text text-bg-light">Visit URL</span>
                                 <Field type="url" name="url" className="form-control" min="0" required={true}/>
+                            </div>
+                            <div className="input-group mb-3">
+                                <span className="input-group-text text-bg-light">Tag</span>
+                                <Field type="text" name="tag" className="form-control" placeholder={"optional"} required={false}/>
                             </div>
                             <div className="form-check mb-3">
                                 <Field className="form-check-input" type="checkbox" id="advReq" checked={advReq}

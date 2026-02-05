@@ -18,7 +18,7 @@ const Watch = () => {
     useEffect(() => socketEffect(socket, [
         {
             name: 'watch',
-            on: text => setLogs(prev => [{text, id: prev.length}, ...prev])
+            on: text => setLogs(prev => [{text, id: prev.length, time: new Date().toLocaleTimeString()}, ...prev])
         }
     ]), [isSocketLoading]);
 
@@ -28,7 +28,7 @@ const Watch = () => {
                 <ul className={"list-unstyled"} ref={animate}>
                     {
                         logs.map(log =>
-                            <li key={log.id} className={"text-bg-light mb-1 px-1"}>{log.text}</li>
+                            <li key={log.id} className={"text-bg-light mb-1 px-1"}>[{log.time}] {log.text}</li>
                         )
                     }
                 </ul>

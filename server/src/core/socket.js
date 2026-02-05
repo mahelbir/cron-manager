@@ -1,17 +1,17 @@
-import createError from "http-errors";
 import {Server} from "socket.io";
 
-import config from "./config.js";
-import {verifyJwt} from "../middlewares/jwt.js";
+import config from "../config/config.js";
+import {verifyJwt} from "../middlewares/jwt-middleware.js";
+import createError from "http-errors";
 
 
 let io = null;
 
 export default {
-    init: function (server) {
+    init(server) {
         io = new Server(server, {
             cors: {
-                origin: (config.env.NODE_ENV=== 'production' ? null : ['http://localhost:5173']),
+                origin: (config.env.NODE_ENV === 'production' ? null : ['http://localhost:5173']),
                 methods: ["GET"]
             }
         });
@@ -25,19 +25,12 @@ export default {
                     if (verifyJwt(token))
                         return next();
                 }
-            } catch (e) {
-                return next(createError(401, e.message));
+            } catch {
             }
             return next(createError(401));
         })
-        io.on('connection', (socket) => {
-            console.info('SOCKET | client connected: ' + socket.id);
-            socket.on('disconnect', () => {
-                console.info('SOCKET | client disconnected: ' + socket.id);
-            });
-        });
     },
-    get: function () {
+    get() {
         return io;
     }
 }

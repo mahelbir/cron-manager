@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "cron",
+      "name": "server",
       "script": "npm",
       "args": "start",
       "env": {

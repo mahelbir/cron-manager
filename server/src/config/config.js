@@ -1,19 +1,15 @@
-import path from 'path';
-import {fileURLToPath} from 'url';
+import path from "path";
+import {rootPath} from "../core/core.js";
 
-import dotenv from 'dotenv'
-
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({override: true})
-
-const dir = {root: path.join(__dirname, "../")};
-dir.static = path.join(dir.root, '../../client/dist')
-dir.storage = path.join(dir.root, "storage");
-dir.jobs = path.join(dir.storage, "jobs")
+const pathConfig = {root: rootPath()};
+pathConfig.source = path.join(pathConfig.root, "src/");
+pathConfig.static = path.join(pathConfig.root, '../client/dist/');
+pathConfig.storage = path.join(pathConfig.source, "storage/");
+pathConfig.appStorage = path.join(pathConfig.storage, "app/");
+pathConfig.cache = path.join(pathConfig.storage, "cache/");
 
 export default {
-    path: dir,
-    env: process.env
+    path: pathConfig,
+    env: process.env,
+    isDev: process.env.NODE_ENV !== "production",
 };
