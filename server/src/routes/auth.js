@@ -28,23 +28,31 @@ router.post("/methods", async (req, res) => {
 });
 
 router.post("/login", async (req, res, next) => {
-    try {
-        if (req.body.password.toString() === config.env.PASSWORD.toString())
-            return res.json({
-                token: jwt.sign({}, config.env.SECRET_KEY, {
-                    expiresIn: "7d"
-                })
-            });
-
+    if (!isPasswordEnabled) {
         return res.status(400).json({
-            error: "Login failed!"
-        })
-    } catch (e) {
-        return next(e);
+            error: "Login disabled"
+        });
     }
+
+    if (req.body.password.toString() === config.env.PASSWORD.toString())
+        return res.json({
+            token: jwt.sign({}, config.env.SECRET_KEY, {
+                expiresIn: "7d"
+            })
+        });
+
+    return res.status(400).json({
+        error: "Login failed!"
+    })
 });
 
 router.get("/sso", async (req, res) => {
+    if (!isSsoEnabled) {
+        return res.status(400).json({
+            error: "Login disabled"
+        });
+    }
+
     req.acceptJSON = true;
     const token = req.query.token;
     if (!token) {
@@ -57,7 +65,7 @@ router.get("/sso", async (req, res) => {
             token,
             SSO_CLIENT_SECRET,
             {
-                algorithms: ['HS256']
+                audience: new URL(config.env.BASE_URL).hostname
             }
         );
         const url = new URL(req.query.state);

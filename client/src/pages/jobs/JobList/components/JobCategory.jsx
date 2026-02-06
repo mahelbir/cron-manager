@@ -2,9 +2,22 @@ import classNames from "classnames";
 import JobItem from "./JobItem.jsx";
 import {JobItemContext} from "../../../../stores/AppContexts.js";
 
+const sortByName = (jobs) => {
+    return jobs.sort((a, b) => {
+        const nameA = a.name.toLowerCase()
+        const nameB = b.name.toLowerCase()
+        if (nameA < nameB)
+            return -1
+        else if (nameA > nameB)
+            return 1
+        else
+            return 0
+    })
+}
+
 const JobCategory = ({categories, category, categoryStates, toggleCategoryState, setError, times, jobs}) => {
 
-    const categoryJobs = categories[category].map(jobIndex => jobs[jobIndex])
+    const categoryJobs = sortByName(categories[category].map(jobIndex => jobs[jobIndex]))
 
     return (
         <>

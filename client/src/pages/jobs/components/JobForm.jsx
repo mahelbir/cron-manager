@@ -19,13 +19,13 @@ const JobForm = ({job = {}, jobId}) => {
     const initialValues = useMemo(() => ({
         name: job?.name || '',
         tag: job?.tag || '',
-        interval: job?.interval || 60,
+        interval: job?.interval ?? 60,
         concurrent: job?.concurrent || 1,
         url: job?.url || '',
-        method: job?.method?.toUpperCase() || 'GET',
+        method: job?.method || 'GET',
         options: job?.options ? JSON.stringify(job.options, null, 4) : '{}',
         resCheck: job?.response?.check || '',
-        resInterval: job?.response?.interval || 30
+        resInterval: job?.response?.interval ?? 30
     }), [job?.id]);
 
 

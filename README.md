@@ -1,6 +1,7 @@
 # Cron Manager
 
-A self-hosted web panel built with Node.js and React for managing HTTP-based cron jobs with parallel and asynchronous execution.
+A self-hosted web panel built with Node.js and React for managing HTTP-based cron jobs with parallel and asynchronous
+execution.
 
 ## ⭐ Features
 
@@ -46,19 +47,40 @@ cp data/.env.example server/.env
 nano server/.env
 
 # Build and run
-cd client && rm -rf node_modules && npm i -D && npm run build && cd ../server && npm i && npm i pm2 -g  && pm2 start process.json
+cd client && npm i -D && npm run build && cd ../server && npm i && npm i pm2 -g  && pm2 start process.json
+```
+
+## 🔄 How to Update
+
+Check [.env.example](data/.env.example) for any new configuration options and update your `data/.env` accordingly.
+
+### 🐳 Docker
+
+Pull the latest changes and rebuild:
+
+```bash
+git pull
+docker compose up -d --build
+```
+
+### 💪🏻 Non-Docker
+
+Pull the latest changes and restart:
+
+```bash
+git pull
+cd client && rm -rf node_modules && npm i -D && npm run build && cd ../server && rm -rf node_modules && npm i  && pm2 restart process.json
 ```
 
 ## 🛠️ Technology Stack
 
-| Technology        | Purpose                               |
-|-------------------|---------------------------------------|
-| Node.js           | Server runtime                        |
-| Express           | Web framework                         |
-| React             | Frontend UI                           |
-| SQLite (Sequelize)| Database                              |
-| Socket.IO         | Real-time job monitoring              |
-| JWT               | Authentication                        |
+| Technology | Purpose               |
+|------------|-----------------------|
+| Express    | Backend framework     |
+| React      | Frontend UI           |
+| SQLite     | Database              |
+| Socket.IO  | Real-time  monitoring |
+| JWT        | Authentication        |
 
 > For SSO with passkey authentication, you can use [Passokey](https://github.com/mahelbir/passokey).
 

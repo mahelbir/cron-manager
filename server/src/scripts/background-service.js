@@ -58,13 +58,11 @@ export default async () => {
                 }
                 this.nextExecutionTime = timeEnd + interval;
 
-                if (job) {
-                    const mtime = await job.updateLastRunAt();
-                    socket.get().emit("time", {
-                        id: job.id,
-                        time: mtime
-                    });
-                }
+                const mtime = await job.updateLastRunAt();
+                socket.get().emit("time", {
+                    id: job.id,
+                    time: mtime
+                });
 
                 const timeElapsed = timeEnd - timeStart;
                 const seconds = Math.max(0.01, (timeElapsed / 1000)).toFixed(2);
@@ -80,7 +78,7 @@ export default async () => {
         }
 
         log(message) {
-            message = `[ ${this.tag ? "#" + this.tag + ' ' : ''}${this.name} ] ${message}`;
+            message = `[ ${this.tag ? this.tag + ' ' : ''}${this.name} ] ${message}`;
             console.info(message);
             socket.get().emit("watch", message);
         }
