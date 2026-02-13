@@ -8,7 +8,9 @@ RUN npm run build
 
 # Build server
 FROM node:24-alpine
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache python3 make g++ git
+RUN git config --global url."https://".insteadOf "ssh://git@" && \
+    git config --global url."https://".insteadOf "git@"
 WORKDIR /app/server
 COPY server/package*.json ./
 RUN npm ci --omit=dev

@@ -6,8 +6,8 @@
     "dev": "npx cross-env NODE_ENV=development npx nodemon server.js --ext js,twig,env"
   },
   "dependencies": {
-    "@mepkg/maxios": "gitlab:mepkg/maxios#v1.0.0",
-    "@mekpg/background-job": "gitlab:mepkg/background-job#v1.0.0",
+    "@mepkg/maxios": "git+https://gitlab.com/mepkg/maxios.git#v1.0.0",
+    "@mekpg/background-job": "git+https://gitlab.com/mepkg/background-job.git#v1.0.0",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "cross-env": "^10.1.0",
