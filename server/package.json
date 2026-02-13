@@ -6,12 +6,11 @@
     "dev": "npx cross-env NODE_ENV=development npx nodemon server.js --ext js,twig,env"
   },
   "dependencies": {
-    "@mahelbir/maxios": "^2.0.0",
-    "@sequelize/sqlite3": "^7.0.0-alpha.48",
+    "@mahelbir/maxios": "^3.0.0",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "cross-env": "^10.1.0",
-    "dotenv": "^17.2.4",
+    "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "express-jwt": "^8.5.1",
     "express-timeout-handler": "^2.2.2",
@@ -22,10 +21,11 @@
     "joi": "^18.0.2",
     "jsonwebtoken": "9.0.3",
     "lodash-es": "4.17.23",
-    "melperjs": "^14.0.0",
+    "melperjs": "^14.1.0",
     "moment-timezone": "^0.6.0",
-    "qs": "6.14.1",
+    "qs": "6.14.2",
     "sequelize": "^6.37.7",
-    "socket.io": "^4.8.3"
+    "socket.io": "^4.8.3",
+    "sqlite3": "^5.1.7"
   }
 }
