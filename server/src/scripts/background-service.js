@@ -1,9 +1,9 @@
 import socket from "../core/socket.js";
-import {BackgroundJob, BackgroundJobRunner} from "../utils/background-job.js";
 import Job from "../models/job.js";
-import {sleepMs} from "melperjs";
-import {maxios} from "@mahelbir/maxios";
 import config from "../config/config.js";
+import {sleepMs} from "melperjs";
+import {maxios} from "@mepkg/maxios";
+import {BackgroundJob, BackgroundJobRunner} from "@mekpg/background-job";
 
 
 export default async () => {
