@@ -47,7 +47,7 @@ cp data/.env.example server/.env
 nano server/.env
 
 # Build and run
-cd client && npm i -D && npm run build && cd ../server && npm i && npm i pm2 -g  && pm2 start process.json
+cd client && npm ci -D && npm run build && cd ../server && npm ci && npm i pm2 -g  && pm2 start process.json
 ```
 
 ## 🔄 How to Update
@@ -69,7 +69,7 @@ Pull the latest changes and restart:
 
 ```bash
 git pull
-cd client && rm -rf node_modules && npm i -D && npm run build && cd ../server && rm -rf node_modules && npm i  && pm2 restart process.json
+cd client && npm ci -D && npm run build && cd ../server && npm ci && pm2 restart process.json
 ```
 
 ## 🛠️ Technology Stack

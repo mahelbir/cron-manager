@@ -10,8 +10,8 @@
   "dependencies": {
     "@formkit/auto-animate": "^0.9.0",
     "@loadable/component": "^5.16.7",
-    "@tanstack/react-query": "^5.90.20",
-    "axios": "^1.13.4",
+    "@tanstack/react-query": "^5.90.21",
+    "axios": "^1.13.5",
     "bootswatch": "^5.3.8",
     "classnames": "^2.5.1",
     "formik": "^2.4.9",

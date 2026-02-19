@@ -14,6 +14,7 @@ const Login = () => {
     const authLogin = useAuthStore(state => state.login)
     const [tokenProcessed, setTokenProcessed] = useState(false)
 
+    // authenticate from query
     useEffect(() => {
         const params = new URLSearchParams(window.location.search)
         const authToken = params.get("authToken")
@@ -26,6 +27,7 @@ const Login = () => {
         setTokenProcessed(true)
     }, [window.location.search])
 
+    // get authentication methods
     const methodsQuery = useQuery({
         queryKey: ['methods'],
         queryFn: async () => {
@@ -39,13 +41,32 @@ const Login = () => {
         enabled: tokenProcessed
     })
 
+    // handle authentication methods
     useEffect(() => {
+        if (!methodsQuery.isSuccess) return
+        if (methodsQuery.data?.password) return
         if (methodsQuery.data?.sso?.redirect) {
             window.location.href = methodsQuery.data.sso.redirect
+            return
+        }
+        if (methodsQuery.data?.anonymous) {
+            anonymousMutation.mutate(undefined, {
+                onSuccess: token => authLogin(token)
+            })
         }
     }, [methodsQuery.data])
 
-    const mutation = useMutation({
+    // passthrough
+    const anonymousMutation = useMutation({
+        mutationKey: ['anonymous'],
+        mutationFn: async () => {
+            return (await apiRequest("auth/anonymous", {
+                method: "POST"
+            })).data.token
+        }
+    })
+
+    const passwordMutation = useMutation({
         mutationKey: ['login'],
         mutationFn: async (password) => {
             return (await apiRequest("auth/login", {
@@ -54,32 +75,27 @@ const Login = () => {
             })).data.token
         }
     })
-    const {isPending, failureReason, mutate} = mutation
     const initialValues = {password: ''}
-
     const handleForm = ({password}, {setFieldValue}) => {
-        mutate(password, {
+        passwordMutation.mutate(password, {
             onSuccess: token => authLogin(token),
-            onError: () => setTimeout(() => mutation.reset(), 2500),
+            onError: () => setTimeout(() => passwordMutation.reset(), 2500),
             onSettled: () => {
                 setFieldValue('password', initialValues.password)
             }
         })
     }
+    const isPending = passwordMutation.isPending || anonymousMutation.isPending || methodsQuery.isLoading || !tokenProcessed
+    const failureReason = passwordMutation.failureReason || anonymousMutation.failureReason || methodsQuery.failureReason
 
     return (
         <div className="card-body">
 
-            <Loading enabled={isPending || methodsQuery.isLoading || !tokenProcessed}/>
+            <Loading
+                enabled={isPending}/>
             <Alert type="error" enabled={!!failureReason}>
                 {failureMessage(failureReason)}
             </Alert>
-
-            {methodsQuery.isSuccess && !methodsQuery.data?.sso?.redirect && !methodsQuery.data?.password && (
-                <Alert type="error" enabled={true}>
-                    Login disabled
-                </Alert>
-            )}
 
             {methodsQuery.isSuccess && methodsQuery.data?.password && (
                 <Formik initialValues={initialValues} onSubmit={handleForm}>

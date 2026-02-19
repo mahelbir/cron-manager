@@ -9,6 +9,7 @@ const SSO_CLIENT_ID = config.env.SSO_CLIENT_ID;
 const SSO_CLIENT_SECRET = config.env.SSO_CLIENT_SECRET;
 const isSsoEnabled = config.env.SSO_ENABLED === 'true';
 const isPasswordEnabled = config.env.PASSWORD_ENABLED === 'true';
+const isAnonymous = !isSsoEnabled && !isPasswordEnabled;
 
 router.post("/methods", async (req, res) => {
     let url;
@@ -20,25 +21,24 @@ router.post("/methods", async (req, res) => {
         url = url.toString();
     }
     return res.json({
+        anonymous: isAnonymous,
+        password: isPasswordEnabled,
         sso: {
             redirect: url
         },
-        password: isPasswordEnabled
     });
 });
 
 router.post("/login", async (req, res, next) => {
     if (!isPasswordEnabled) {
-        return res.status(400).json({
-            error: "Login disabled"
+        return res.status(403).json({
+            error: "Disabled"
         });
     }
 
     if (req.body.password.toString() === config.env.PASSWORD.toString())
         return res.json({
-            token: jwt.sign({}, config.env.SECRET_KEY, {
-                expiresIn: "7d"
-            })
+            token: generateToken()
         });
 
     return res.status(400).json({
@@ -48,8 +48,8 @@ router.post("/login", async (req, res, next) => {
 
 router.get("/sso", async (req, res) => {
     if (!isSsoEnabled) {
-        return res.status(400).json({
-            error: "Login disabled"
+        return res.status(403).json({
+            error: "Disabled"
         });
     }
 
@@ -69,15 +69,25 @@ router.get("/sso", async (req, res) => {
             }
         );
         const url = new URL(req.query.state);
-        url.searchParams.append("authToken", jwt.sign({}, config.env.SECRET_KEY, {
-            expiresIn: "7d"
-        }));
+        url.searchParams.append("authToken", generateToken());
         return res.redirect(url.toString());
     } catch (error) {
         return res
             .status(401)
             .send({error: "Authentication failed"});
     }
+});
+
+router.post("/anonymous", async (req, res) => {
+    if (!isAnonymous) {
+        return res.status(403).json({
+            error: "Disabled"
+        });
+    }
+
+    return res.json({
+        token: generateToken()
+    });
 });
 
 router.get("/logout", (req, res) => {
@@ -91,3 +101,9 @@ router.get("/logout", (req, res) => {
 
     return res.redirect(ref);
 });
+
+function generateToken() {
+    return jwt.sign({}, config.env.SECRET_KEY, {
+        expiresIn: "7d"
+    });
+}
