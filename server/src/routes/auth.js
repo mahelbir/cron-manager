@@ -7,6 +7,7 @@ const router = await newRoute("/api/auth");
 const SSO_URL = config.env.SSO_URL;
 const SSO_CLIENT_ID = config.env.SSO_CLIENT_ID;
 const SSO_CLIENT_SECRET = config.env.SSO_CLIENT_SECRET;
+const SSO_CALLBACK = config.env.BASE_URL + "/api/auth/sso";
 const isSsoEnabled = config.env.SSO_ENABLED === 'true';
 const isPasswordEnabled = config.env.PASSWORD_ENABLED === 'true';
 const isAnonymous = !isSsoEnabled && !isPasswordEnabled;
@@ -16,7 +17,7 @@ router.post("/methods", async (req, res) => {
     if (isSsoEnabled) {
         url = new URL(SSO_URL);
         url.pathname = "/auth/login/" + SSO_CLIENT_ID;
-        url.searchParams.append("redirectUri", config.env.BASE_URL + "/api/auth/sso");
+        url.searchParams.append("redirectUri", SSO_CALLBACK);
         url.searchParams.append("state", req.body.state || "/");
         url = url.toString();
     }
@@ -61,14 +62,15 @@ router.get("/sso", async (req, res) => {
             .send({error: "Missing token"});
     }
     try {
+        const url = new URL(config.env.BASE_URL);
         jwt.verify(
             token,
             SSO_CLIENT_SECRET,
             {
-                audience: new URL(config.env.BASE_URL).hostname
+                audience: url.hostname
             }
         );
-        const url = new URL(req.query.state);
+        url.pathname = req.query.state || "/";
         url.searchParams.append("authToken", generateToken());
         return res.redirect(url.toString());
     } catch (error) {
@@ -95,7 +97,7 @@ router.get("/logout", (req, res) => {
     if (isSsoEnabled) {
         const url = new URL(SSO_URL);
         url.pathname = "/auth/logout/" + SSO_CLIENT_ID;
-        url.searchParams.append("redirect", req.get('referer') || "");
+        url.searchParams.append("redirectUri", SSO_CALLBACK);
         return res.redirect(url.toString());
     }
 

@@ -34,7 +34,7 @@ const Login = () => {
             return (await apiRequest("auth/methods", {
                 method: "POST",
                 data: {
-                    state: window.location.href
+                    state: window.location.pathname
                 }
             })).data
         },
