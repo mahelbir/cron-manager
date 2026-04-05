@@ -14,3 +14,4 @@ server/.env.*
 test.js
 images
 server/src/storage/*
+/data/

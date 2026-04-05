@@ -3,7 +3,7 @@ import Job from "../models/job.js";
 import config from "../config/config.js";
 import {sleepMs} from "melperjs";
 import {maxios} from "@mepkg/maxios";
-import {BackgroundJob, BackgroundJobRunner} from "@mekpg/background-job";
+import {BackgroundJob, BackgroundJobRunner} from "@mepkg/background-job";
 
 
 export default async () => {

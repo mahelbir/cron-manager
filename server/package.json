@@ -6,27 +6,27 @@
     "dev": "npx cross-env NODE_ENV=development npx nodemon server.js --ext js,twig,env"
   },
   "dependencies": {
-    "@mepkg/maxios": "git+https://gitlab.com/mepkg/maxios.git",
-    "@mekpg/background-job": "git+https://gitlab.com/mepkg/background-job.git",
+    "@mepkg/background-job": "^2.7.0",
+    "@mepkg/maxios": "^5.4.0",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "cross-env": "^10.1.0",
-    "dotenv": "^17.3.1",
+    "dotenv": "^17.4.0",
     "express": "^5.2.1",
     "express-jwt": "^8.5.1",
     "express-timeout-handler": "^2.2.2",
-    "glob": "13.0.5",
+    "glob": "13.0.6",
     "helmet": "^8.1.0",
     "hpagent": "^1.2.0",
     "http-errors": "^2.0.1",
-    "joi": "^18.0.2",
+    "joi": "^18.1.2",
     "jsonwebtoken": "9.0.3",
-    "lodash-es": "4.17.23",
-    "melperjs": "^14.1.0",
-    "moment-timezone": "^0.6.0",
+    "lodash-es": "4.18.1",
+    "melperjs": "^15.0.0",
+    "moment-timezone": "^0.6.1",
     "qs": "6.14.2",
-    "sequelize": "^6.37.7",
+    "sequelize": "6.37.8",
     "socket.io": "^4.8.3",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^6.0.1"
   }
 }

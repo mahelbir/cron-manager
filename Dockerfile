@@ -12,7 +12,7 @@ RUN apk add --no-cache python3 make g++ git
 RUN git config --global url."https://".insteadOf "ssh://git@" && \
     git config --global url."https://".insteadOf "git@"
 WORKDIR /app/server
-COPY server/package*.json ./
+COPY server/package*.json server/.npmrc ./
 RUN npm ci --omit=dev
 COPY server/ ./
 COPY --from=client-build /app/client/dist /app/client/dist
