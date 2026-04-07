@@ -30,7 +30,7 @@ router.post("/methods", async (req, res) => {
     });
 });
 
-router.post("/login", async (req, res, next) => {
+router.post("/login", async (req, res) => {
     if (!isPasswordEnabled) {
         return res.status(403).json({
             error: "Disabled"

@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "server",
+      "name": "cron-manager",
       "script": "npm",
       "args": "start",
       "env": {

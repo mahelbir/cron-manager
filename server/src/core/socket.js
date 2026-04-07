@@ -11,7 +11,7 @@ export default {
     init(server) {
         io = new Server(server, {
             cors: {
-                origin: (config.env.NODE_ENV === 'production' ? null : ['http://localhost:5173']),
+                origin: (config.env.NODE_ENV === 'production' ? [config.env.BASE_URL] : [config.env.BASE_URL, 'http://localhost:5173']),
                 methods: ["GET"]
             }
         });

@@ -1,5 +1,5 @@
 import path from "path";
-import {rootPath} from "../core/core.js";
+import {rootPath} from "../core/root.js";
 
 const pathConfig = {root: rootPath()};
 pathConfig.source = path.join(pathConfig.root, "src/");

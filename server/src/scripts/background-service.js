@@ -48,7 +48,7 @@ export default async () => {
                     status = response.status;
                 } catch (e) {
                     response = e?.response;
-                    status = e?.response?.status || e.message;
+                    status = e?.response?.status || e.message || "Unknown";
                 }
                 const timeEnd = Date.now();
 

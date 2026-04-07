@@ -3,7 +3,7 @@ import path from "path";
 import express from "express";
 
 import globalMiddleware from "../middlewares/global-middleware.js";
-import {importAll} from "./core.js";
+import {importAll} from "./root.js";
 import config from "../config/config.js";
 
 

@@ -8,12 +8,12 @@ import cors from 'cors'
 import timeout from 'express-timeout-handler';
 import {getVersion, serverIp, tokenUuid} from 'melperjs/node';
 
-import config from './src/config/config.js';
-import scripter from './src/core/scripter.js';
-import router from './src/core/router.js';
-import packages from "./src/config/packages.js";
-import models from "./src/models/models.js";
-import hostingMiddleware from "./src/middlewares/hosting-middleware.js";
+import config from '../config/config.js';
+import scripter from './scripter.js';
+import router from './router.js';
+import packages from "../config/packages.js";
+import models from "../models/models.js";
+import hostingMiddleware from "../middlewares/hosting-middleware.js";
 
 
 // system

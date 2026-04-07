@@ -47,7 +47,7 @@ cp data/.env.example server/.env
 nano server/.env
 
 # Build and run
-cd client && npm ci -D && npm run build && cd ../server && npm ci && npm i pm2 -g  && pm2 start process.json
+cd client && npm ci -D && npm run build && cd ../server && npm ci && npm i pm2 -g  && pm2 start pm2.json
 ```
 
 ## 🔄 How to Update
@@ -65,11 +65,11 @@ docker compose up -d --build --force-recreate
 
 ### 💪🏻 Non-Docker
 
-Pull the latest changes and restart:
+Pull the latest changes and rebuild:
 
 ```bash
 git pull
-cd client && npm ci -D && npm run build && cd ../server && npm ci && pm2 restart process.json
+cd client && npm ci -D && npm run build && cd ../server && npm ci && pm2 restart pm2.json
 ```
 
 ## 🛠️ Technology Stack

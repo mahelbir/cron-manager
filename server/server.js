@@ -1,5 +1,5 @@
 import * as http from 'http';
-import app from './app.js';
+import app from './src/core/app.js';
 import socket from './src/core/socket.js';
 
 /**
