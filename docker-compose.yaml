@@ -1,16 +1,13 @@
 services:
   cron-manager:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: mahelbir/cron-manager:latest
     container_name: cron-manager
-    ports:
-      - "4043:4043"
     restart: unless-stopped
     env_file:
-      - data/.env
+      - .env
     environment:
       - NODE_ENV=production
-      - PORT=4043
+    ports:
+      - "${PORT}:${PORT}"
     volumes:
       - ./data:/app/server/src/storage

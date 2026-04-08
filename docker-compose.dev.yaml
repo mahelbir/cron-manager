@@ -1,0 +1,15 @@
+services:
+  cron-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cron-manager
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - ./data:/app/server/src/storage

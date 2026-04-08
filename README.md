@@ -12,24 +12,21 @@ execution.
 
 ## 🔧 How to Install
 
+> Panel is accessible at http://localhost:4043 by default
+
 ### 🐳 Docker (Recommended)
 
-```bash
-git clone https://github.com/mahelbir/cron-manager.git
-cd cron-manager
+Download [.env.example](.env.example) as `.env` and configure it, then start with [docker-compose.yaml](docker-compose.yaml):
 
-# Configure environment
-cp data/.env.example data/.env
-nano data/.env
+```
+curl -o .env https://raw.githubusercontent.com/mahelbir/cron-manager/master/.env.example
+curl -O https://raw.githubusercontent.com/mahelbir/cron-manager/master/docker-compose.yaml
+nano .env
 ```
 
-Then start the container:
-
-```bash
-docker compose up -d --build
 ```
-
-> Cron Manager is now running on http://localhost:4043
+docker compose up -d
+```
 
 ### 💪🏻 Non-Docker
 
@@ -43,7 +40,7 @@ git clone https://github.com/mahelbir/cron-manager.git
 cd cron-manager
 
 # Configure environment
-cp data/.env.example server/.env
+cp .env.example server/.env
 nano server/.env
 
 # Build and run
@@ -52,15 +49,15 @@ cd client && npm ci -D && npm run build && cd ../server && npm ci && npm i pm2 -
 
 ## 🔄 How to Update
 
-Check [.env.example](data/.env.example) for any new configuration options and update your `data/.env` accordingly.
+Check [.env.example](.env.example) for any new configuration options and update your `.env` accordingly.
 
 ### 🐳 Docker
 
-Pull the latest changes and rebuild:
+Pull the latest image and recreate:
 
-```bash
-git pull
-docker compose up -d --build --force-recreate
+```
+docker compose pull
+docker compose up -d --force-recreate
 ```
 
 ### 💪🏻 Non-Docker

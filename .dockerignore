@@ -11,6 +11,7 @@ server/.env
 server/.env.*
 *.db
 *.cache
+Makefile
 test.js
 images
 server/src/storage/*
