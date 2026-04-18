@@ -1,7 +1,9 @@
 # Cron Manager
 
-A self-hosted web panel built with Node.js and React for managing HTTP-based cron jobs with parallel and asynchronous
-execution.
+<a target="_blank" href="https://hub.docker.com/r/mahelbir/cron-manager"><img src="https://img.shields.io/docker/pulls/mahelbir/cron-manager" /></a>
+<a target="_blank" href="https://hub.docker.com/r/mahelbir/cron-manager"><img src="https://img.shields.io/docker/v/mahelbir/cron-manager?label=docker%20image%20ver." /></a>
+
+A self-hosted web panel for managing HTTP-based cron jobs with parallel execution and real-time monitoring.
 
 ## ⭐ Features
 
@@ -19,8 +21,8 @@ execution.
 Download [.env.example](.env.example) as `.env` and configure it, then start with [docker-compose.yaml](docker-compose.yaml):
 
 ```
-curl -o .env https://raw.githubusercontent.com/mahelbir/cron-manager/master/.env.example
-curl -O https://raw.githubusercontent.com/mahelbir/cron-manager/master/docker-compose.yaml
+curl -O https://raw.githubusercontent.com/mahelbir/cron-manager/main/docker-compose.yaml
+curl -o .env https://raw.githubusercontent.com/mahelbir/cron-manager/main/.env.example
 nano .env
 ```
 
@@ -49,9 +51,11 @@ cd client && npm ci -D && npm run build && cd ../server && npm ci && npm i pm2 -
 
 ## 🔄 How to Update
 
-Check [.env.example](.env.example) for any new configuration options and update your `.env` accordingly.
+> Check [.env.example](.env.example) for any new configuration options and update your `.env` accordingly.
 
 ### 🐳 Docker
+
+It is recommended to check the latest [docker-compose.yaml](docker-compose.yaml) for any changes before updating.
 
 Pull the latest image and recreate:
 
