@@ -1,5 +1,5 @@
 IMAGE=mahelbir/cron-manager
-VERSION=2.0.0
+VERSION=3.0.0
 
 dev:
 	docker compose -f docker-compose.dev.yaml up -d --build --force-recreate

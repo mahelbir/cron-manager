@@ -80,7 +80,7 @@ export default async () => {
         log(message) {
             message = `[ ${this.tag ? this.tag + ' ' : ''}${this.name} ] ${message}`;
             console.info(message);
-            socket.get().emit("watch", message);
+            socket.get().emit("watch", {jobId: this.jobId, message});
         }
 
         init({jobId, jobIndex}) {

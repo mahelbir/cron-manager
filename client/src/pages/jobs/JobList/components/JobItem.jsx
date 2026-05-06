@@ -39,7 +39,7 @@ const JobRemoveButton = () => {
     return (
         <>
             <TopLoading enabled={isPending}/>
-            <button className="btn btn-danger btn-sm" onClick={handle} disabled={isPending}>
+            <button className="btn btn-danger btn-sm" onClick={handle} disabled={isPending} title="Delete">
                 <i className="fas fa-trash"></i>
             </button>
         </>
@@ -118,7 +118,8 @@ const JobItem = () => {
             <td>
                 <div className="btn-group">
                     <JobStatusButton/>
-                    <Link to={`job/${job.id}`} className="btn btn-primary btn-sm"><i className="fas fa-edit"></i></Link>
+                    <Link to={`job/${job.id}`} className="btn btn-primary btn-sm" title="Edit"><i className="fas fa-edit"></i></Link>
+                    <Link to={`watch?jobId=${job.id}`} className="btn btn-info btn-sm" title="Watch"><i className="fas fa-eye"></i></Link>
                     <JobRemoveButton/>
                 </div>
             </td>

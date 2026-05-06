@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {useSearchParams} from "react-router-dom";
 import useSocketStore from "../stores/socketStore.js";
 import {socketEffect} from "../utils/socket.js";
 import LoadableComponent from "../components/Loadable.jsx";
@@ -13,14 +14,21 @@ const Watch = () => {
     const isSocketLoading = useSocketStore(state => state.isLoading)
     const isSocketConnected = useSocketStore(state => state.isConnected)
     const [logs, setLogs] = useState([])
+    const [searchParams] = useSearchParams()
+    const jobIdParam = searchParams.get('jobId')
+    const filterJobId = jobIdParam ? Number(jobIdParam) : null
 
 
     useEffect(() => socketEffect(socket, [
         {
             name: 'watch',
-            on: text => setLogs(prev => [{text, id: prev.length, time: new Date().toLocaleTimeString()}, ...prev])
+            on: payload => {
+                const {jobId, message} = typeof payload === 'string' ? {message: payload} : (payload || {})
+                if (filterJobId !== null && jobId !== filterJobId) return
+                setLogs(prev => [{text: message, id: prev.length, time: new Date().toLocaleTimeString()}, ...prev])
+            }
         }
-    ]), [isSocketLoading]);
+    ]), [isSocketLoading, filterJobId]);
 
     return (
         <>
