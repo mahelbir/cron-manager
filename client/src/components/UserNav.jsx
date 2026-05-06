@@ -1,14 +1,24 @@
 import {useEffect} from "react";
 import {NavLink, Outlet} from "react-router-dom";
+import {useQuery} from "@tanstack/react-query";
 import useAuthStore from "../stores/authStore.js";
 import useSocketStore from "../stores/socketStore.js";
 import {initSocket, socketEffect} from "../utils/socket.js";
+import {apiRequest} from "../utils/helper.js";
 
 
 const UserNav = () => {
 
     const authToken = useAuthStore(state => state.authToken)
     const logout = useAuthStore(state => state.logout)
+    const methodsQuery = useQuery({
+        queryKey: ['methods'],
+        queryFn: async () => (await apiRequest("auth/methods", {
+            method: "POST",
+            data: {state: window.location.pathname}
+        })).data
+    })
+    const canLogout = methodsQuery.data && !methodsQuery.data.anonymous
     const socket = useSocketStore(state => state.socket)
     const setSocket = useSocketStore(state => state.setSocket)
     const isSocketLoading = useSocketStore(state => state.isLoading)
@@ -59,10 +69,12 @@ const UserNav = () => {
             <div className="card-body">
                 <Outlet/>
             </div>
-            <div className="card-footer d-flex justify-content-end">
-                <button className="btn btn-secondary" onClick={logout}><i className="fas fa-sign-out"></i> Logout
-                </button>
-            </div>
+            {canLogout && (
+                <div className="card-footer d-flex justify-content-end">
+                    <button className="btn btn-secondary" onClick={logout}><i className="fas fa-sign-out"></i> Logout
+                    </button>
+                </div>
+            )}
         </>
     )
 }
