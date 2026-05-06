@@ -347,3 +347,4 @@ $RECYCLE.BIN/
 *.cache
 !*.example
 test.js
+*.local.*
